@@ -35,9 +35,6 @@ export default {
       authToken: DATABASE_ACCESS_TOKEN,
     });
     
-    // Initialize database table
-    await initializeDatabase(db);
-    
     const url = new URL(request.url);
     const path = url.pathname;
     
