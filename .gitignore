@@ -1,0 +1,24 @@
+# Hugo
+/public/
+/resources/_gen/
+.hugo_build.lock
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Environment variables (protect your API keys!)
+.env
+.env.local
+*.key
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

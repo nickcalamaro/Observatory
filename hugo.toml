@@ -1,0 +1,10 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-gb'
+title = 'The Observatory'
+
+[module]
+[[module.imports]]
+disable = false
+ignoreConfig = false
+ignoreImports = false
+path = 'github.com/theNewDynamic/gohugo-theme-ananke/v2'
