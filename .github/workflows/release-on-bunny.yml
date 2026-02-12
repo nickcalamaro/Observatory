@@ -31,8 +31,8 @@ jobs:
       - name: Build
         run: "npm run build"
 
-      - name: Publish the script to Bunny
+      - name: Publish Charts Script to Bunny
         uses: "BunnyWay/actions/deploy-script@main"
         with:
           script_id: 64649
-          file: "dist/index.js"
+          file: "scripts/bunnyChartsScript.js"
