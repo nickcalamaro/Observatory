@@ -162,7 +162,7 @@ async function createChart(data) {
       args: [type, title, description, configJson, now, now],
     });
     
-    const chartId = result.lastInsertRowid;
+    const chartId = Number(result.lastInsertRowid);
     
     return jsonResponse({ success: true, chartId, created: now });
   } catch (error) {
