@@ -15,13 +15,6 @@
  * - DATABASE_READ_ONLY_ACCESS_TOKEN - API key for read operations (optional, will use ACCESS_TOKEN if not set)
  */
 
-// CORS headers for your domain
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*', // Change to your domain in production
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-API-Key',
-};
-
 export default {
   async fetch(request, env) {
     // Access environment variables from secrets
@@ -43,7 +36,11 @@ export default {
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         status: 204,
-        headers: CORS_HEADERS
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        }
       });
     }
 
@@ -238,7 +235,9 @@ function jsonResponse(data, status = 200) {
     status,
     headers: {
       'Content-Type': 'application/json',
-      ...CORS_HEADERS
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
     }
   });
 }
