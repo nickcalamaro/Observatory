@@ -97,6 +97,49 @@
     .hidden {
         display: none;
     }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+    .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-content {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    .chart-list-item {
+        padding: 1rem;
+        margin: 0.5rem 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .chart-list-item:hover {
+        background-color: #f0f0f0;
+    }
+    .chart-list-item h3 {
+        margin: 0 0 0.5rem 0;
+    }
+    .chart-list-item p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9rem;
+    }
     .examples {
         margin-top: 1rem;
     }
@@ -113,6 +156,132 @@
     .example-btn:hover {
         background: #dee2e6;
     }
+    .tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #ddd;
+    }
+    .tab {
+        padding: 0.75rem 1.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #666;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s;
+    }
+    .tab:hover {
+        color: #357edd;
+        background: #f7f7f7;
+    }
+    .tab.active {
+        color: #357edd;
+        border-bottom-color: #357edd;
+    }
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+    }
+    .form-builder {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    .field-section {
+        background: #f9f9f9;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    .field-section h3 {
+        margin: 0 0 1rem 0;
+        font-size: 1.1rem;
+        color: #333;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 0.5rem;
+    }
+    .field-row {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+    .field-row label {
+        font-size: 0.9rem;
+        color: #555;
+        font-weight: 500;
+    }
+    .field-row input[type="text"],
+    .field-row input[type="number"],
+    .field-row select {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+    .field-row input[type="color"] {
+        width: 60px;
+        height: 35px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .field-row input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+    .data-editor {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-top: 0.5rem;
+    }
+    .data-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        align-items: center;
+    }
+    .data-row input {
+        flex: 1;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+    .data-row button {
+        padding: 0.5rem 0.75rem;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+    .data-row button:hover {
+        background: #c82333;
+    }
+    .add-data-btn {
+        padding: 0.5rem 1rem;
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+    .add-data-btn:hover {
+        background: #218838;
+    }
 </style>
 
 <div class="admin-container">
@@ -122,32 +291,23 @@
     
     <div id="alert-container"></div>
     
+    <!-- Tab Navigation -->
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('simple')">Simple Editor</button>
+        <button class="tab" onclick="switchTab('advanced')">Advanced (JSON)</button>
+    </div>
+    
     <div class="form-grid">
         <div>
             <div class="form-group">
-                <label for="api-url">API URL</label>
-                <input type="text" id="api-url" placeholder="https://api.yourdomain.com/api/charts" value="https://api.yourdomain.com/api/charts">
-            </div>
-            
-            <div class="form-group">
-                <label for="api-key">API Key (for saving)</label>
-                <input type="password" id="api-key" placeholder="your-secret-api-key">
-            </div>
-            
-            <div class="form-group">
-                <label for="chart-id">Chart ID</label>
-                <input type="text" id="chart-id" placeholder="newsletter-gradient-area" value="newsletter-gradient-area">
+                <label for="chart-id">Chart ID (auto-generated)</label>
+                <input type="text" id="chart-id" placeholder="Auto" readonly style="background: #f5f5f5;">
             </div>
             
             <div class="form-group">
                 <label for="chart-type">Chart Type</label>
                 <select id="chart-type">
-                    <option value="line">Line</option>
-                    <option value="bar">Bar</option>
-                    <option value="pie">Pie</option>
-                    <option value="scatter">Scatter</option>
-                    <option value="radar">Radar</option>
-                    <option value="candlestick">Candlestick</option>
+                    <option value="">Loading chart types...</option>
                 </select>
             </div>
             
@@ -170,10 +330,20 @@
         </div>
         
         <div>
-            <div class="form-group">
-                <label for="chart-config">ECharts Configuration (JSON)</label>
-                <textarea id="chart-config" placeholder='{"title": {"text": "My Chart"}, "series": [...]}'>
-                </textarea>
+            <!-- Simple Editor Tab Content -->
+            <div id="simple-tab" class="tab-content active">
+                <div id="form-builder-container">
+                    <p style="color: #666; font-style: italic;">Select a chart type to load form fields...</p>
+                </div>
+            </div>
+            
+            <!-- Advanced Editor Tab Content -->
+            <div id="advanced-tab" class="tab-content">
+                <div class="form-group">
+                    <label for="chart-config">ECharts Configuration (JSON)</label>
+                    <textarea id="chart-config" placeholder='{"title": {"text": "My Chart"}, "series": [...]}'>
+                    </textarea>
+                </div>
             </div>
         </div>
     </div>
@@ -191,17 +361,31 @@
     </div>
 </div>
 
+<!-- Chart Selector Modal -->
+<div id="chart-selector-modal" class="modal">
+    <div class="modal-content">
+        <h2>Select a Chart</h2>
+        <div id="chart-list-container">
+            <p>Loading charts...</p>
+        </div>
+        <button class="btn btn-secondary" onclick="closeChartSelector()" style="margin-top: 1rem;">Cancel</button>
+    </div>
+</div>
+
 {{ end }}
 
 {{ define "footer" }}
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 <script>
-let previewChart = null;
+// Hardcoded API configuration
+const API_URL = 'https://observatorycharts-ji28h.bunny.run/api/charts';
+
+let chartInstance = null;
 
 // Initialize preview chart
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('chart-preview');
-    previewChart = echarts.init(container);
+    chartInstance = echarts.init(container);
     
     // Load default example
     loadExample('gradient-area');
@@ -325,7 +509,8 @@ function loadExample(exampleName) {
     if (!config) return;
     
     document.getElementById('chart-config').value = JSON.stringify(config, null, 2);
-    previewChart.setOption(config, true);
+    generateFormFields(config); // Regenerate form fields
+    chartInstance.setOption(config, true);
     
     if (config.title && config.title.text) {
         document.getElementById('chart-title').value = config.title.text;
@@ -351,7 +536,8 @@ function previewChart() {
     const config = JSON.parse(configText);
     
     try {
-        previewChart.setOption(config, true);
+        generateFormFields(config); // Update form from JSON
+        chartInstance.setOption(config, true);
         showAlert('Preview updated!', 'success');
     } catch (e) {
         showAlert(`Error rendering chart: ${e.message}`, 'error');
@@ -361,23 +547,11 @@ function previewChart() {
 async function saveChart() {
     if (!validateJSON()) return;
     
-    const apiUrl = document.getElementById('api-url').value;
-    const apiKey = document.getElementById('api-key').value;
     const chartId = document.getElementById('chart-id').value;
     const chartType = document.getElementById('chart-type').value;
     const title = document.getElementById('chart-title').value;
     const description = document.getElementById('chart-description').value;
     const configText = document.getElementById('chart-config').value;
-    
-    if (!apiKey) {
-        showAlert('Please enter your API key', 'error');
-        return;
-    }
-    
-    if (!chartId) {
-        showAlert('Please enter a chart ID', 'error');
-        return;
-    }
     
     const payload = {
         type: chartType,
@@ -389,18 +563,31 @@ async function saveChart() {
     };
     
     try {
-        const response = await fetch(`${apiUrl}/${chartId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': apiKey
-            },
-            body: JSON.stringify(payload)
-        });
+        let response;
+        if (chartId) {
+            // Update existing chart
+            response = await fetch(`${API_URL}/${chartId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+        } else {
+            // Create new chart
+            response = await fetch(`${API_URL}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+        }
         
         const result = await response.json();
         
         if (response.ok) {
+            document.getElementById('chart-id').value = result.chartId;
             showAlert(`Chart saved successfully! ID: ${result.chartId}`, 'success');
         } else {
             showAlert(`Error: ${result.error || 'Failed to save chart'}`, 'error');
@@ -411,16 +598,53 @@ async function saveChart() {
 }
 
 async function loadChart() {
-    const apiUrl = document.getElementById('api-url').value;
-    const chartId = document.getElementById('chart-id').value;
+    // Show modal with list of charts
+    const modal = document.getElementById('chart-selector-modal');
+    const container = document.getElementById('chart-list-container');
     
-    if (!chartId) {
-        showAlert('Please enter a chart ID', 'error');
-        return;
-    }
+    modal.classList.add('active');
+    container.innerHTML = '<p>Loading charts...</p>';
     
     try {
-        const response = await fetch(`${apiUrl}/${chartId}`);
+        const response = await fetch(`${API_URL}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const charts = data.charts || [];
+        
+        if (charts.length === 0) {
+            container.innerHTML = '<p>No charts found. Create one first!</p>';
+            return;
+        }
+        
+        // Display chart list
+        container.innerHTML = charts.map(chart => `
+            <div class="chart-list-item" onclick="selectChart('${chart.chartId}')">
+                <h3>${chart.title || chart.chartId}</h3>
+                <p>ID: ${chart.chartId} | Type: ${chart.type || 'unknown'}</p>
+            </div>
+        `).join('');
+        
+    } catch (e) {
+        container.innerHTML = `<p style="color: #e74c3c;">Error loading charts: ${e.message}</p>`;
+    }
+}
+
+function closeChartSelector() {
+    document.getElementById('chart-selector-modal').classList.remove('active');
+}
+
+async function selectChart(chartId) {
+    closeChartSelector();
+    
+    // Set the chart ID in the form
+    document.getElementById('chart-id').value = chartId;
+    
+    try {
+        const response = await fetch(`${API_URL}/${chartId}`);
         const data = await response.json();
         
         if (response.ok) {
@@ -429,7 +653,8 @@ async function loadChart() {
             document.getElementById('chart-title').value = data.metadata?.title || '';
             document.getElementById('chart-description').value = data.metadata?.description || '';
             
-            previewChart.setOption(data.config, true);
+            generateFormFields(data.config); // Regenerate form fields
+            chartInstance.setOption(data.config, true);
             showAlert('Chart loaded successfully!', 'success');
         } else {
             showAlert(`Error: ${data.error || 'Chart not found'}`, 'error');
@@ -452,10 +677,561 @@ function showAlert(message, type) {
     }, 5000);
 }
 
+// Load chart types from database on page load
+async function loadChartTypes() {
+    const select = document.getElementById('chart-type');
+    
+    try {
+        const response = await fetch(`${API_URL}/types`);
+        
+        if (response.ok) {
+            const data = await response.json();
+            const types = data.types || [];
+            
+            if (types.length > 0) {
+                select.innerHTML = types.map(type => 
+                    `<option value="${type.value}">${type.label}</option>`
+                ).join('');
+            } else {
+                select.innerHTML = '<option value="">No chart types available</option>';
+            }
+        } else {
+            console.error('Failed to load chart types');
+            select.innerHTML = '<option value="">Error loading chart types</option>';
+        }
+    } catch (e) {
+        console.error('Error loading chart types:', e);
+        select.innerHTML = '<option value="">Error loading chart types</option>';
+    }
+}
+
+// Load template when chart type changes
+document.getElementById('chart-type').addEventListener('change', async function(e) {
+    const chartType = e.target.value;
+    
+    if (!chartType) return;
+    
+    try {
+        const response = await fetch(`${API_URL}/templates/${chartType}`);
+        
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById('chart-config').value = JSON.stringify(data.config, null, 2);
+            generateFormFields(data.config); // Regenerate form fields
+            previewChart();
+            showAlert(`Loaded ${chartType} template`, 'success');
+        } else {
+            // If no template exists, don't show error - user might want to create from scratch
+            console.log(`No template found for ${chartType}`);
+        }
+    } catch (e) {
+        console.error('Error loading template:', e);
+    }
+});
+
+// Load chart types on page load
+loadChartTypes();
+
+// Tab switching
+function switchTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    document.getElementById(`${tabName}-tab`).classList.add('active');
+}
+
+// Generate form fields from JSON config
+function generateFormFields(config) {
+    const container = document.getElementById('form-builder-container');
+    container.innerHTML = '';
+    
+    if (!config) {
+        container.innerHTML = '<p style="color: #666; font-style: italic;">No configuration loaded</p>';
+        return;
+    }
+    
+    // Title section
+    if (config.title || true) {
+        const titleSection = createFieldSection('Chart Title');
+        titleSection.appendChild(createField('text', 'title.text', config.title?.text || '', 'Title Text'));
+        titleSection.appendChild(createField('text', 'title.subtext', config.title?.subtext || '', 'Subtitle'));
+        titleSection.appendChild(createField('select', 'title.left', config.title?.left || 'center', 'Alignment', ['left', 'center', 'right']));
+        container.appendChild(titleSection);
+    }
+    
+    // Tooltip section
+    if (config.tooltip || true) {
+        const tooltipSection = createFieldSection('Tooltip');
+        tooltipSection.appendChild(createField('select', 'tooltip.trigger', config.tooltip?.trigger || 'item', 'Trigger', ['item', 'axis', 'none']));
+        container.appendChild(tooltipSection);
+    }
+    
+    // Legend section
+    if (config.legend || true) {
+        const legendSection = createFieldSection('Legend');
+        legendSection.appendChild(createField('select', 'legend.orient', config.legend?.orient || 'horizontal', 'Orient', ['horizontal', 'vertical']));
+        legendSection.appendChild(createField('select', 'legend.left', config.legend?.left || 'center', 'Horizontal', ['left', 'center', 'right']));
+        legendSection.appendChild(createField('select', 'legend.top', config.legend?.top || 'bottom', 'Vertical', ['top', 'middle', 'bottom']));
+        container.appendChild(legendSection);
+    }
+    
+    // Axes section (for line, bar, scatter charts)
+    if (config.xAxis || config.yAxis) {
+        const axisSection = createFieldSection('Axes');
+        
+        if (config.xAxis) {
+            axisSection.appendChild(createField('text', 'xAxis.name', config.xAxis.name || '', 'X-Axis Label'));
+            if (config.xAxis.type === 'category' && Array.isArray(config.xAxis.data)) {
+                axisSection.appendChild(createDataArrayEditor('xAxis.data', config.xAxis.data, 'X-Axis Categories', 'text'));
+            }
+        }
+        
+        if (config.yAxis) {
+            axisSection.appendChild(createField('text', 'yAxis.name', config.yAxis.name || '', 'Y-Axis Label'));
+        }
+        
+        container.appendChild(axisSection);
+    }
+    
+    // Series section (data)
+    if (config.series && Array.isArray(config.series)) {
+        config.series.forEach((series, index) => {
+            const seriesSection = createFieldSection(`Series ${index + 1}: ${series.name || series.type || 'Data'}`);
+            
+            seriesSection.appendChild(createField('text', `series.${index}.name`, series.name || '', 'Series Name'));
+            seriesSection.appendChild(createField('color', `series.${index}.itemStyle.color`, series.itemStyle?.color || '#5470c6', 'Color'));
+            
+            // Handle different data formats
+            if (Array.isArray(series.data)) {
+                if (series.type === 'pie') {
+                    // Pie chart: [{value, name}, ...]
+                    seriesSection.appendChild(createPieDataEditor(`series.${index}.data`, series.data));
+                } else if (series.type === 'scatter') {
+                    // Scatter: [[x, y], ...]
+                    seriesSection.appendChild(createScatterDataEditor(`series.${index}.data`, series.data));
+                } else if (series.type === 'candlestick') {
+                    // Candlestick: [[open, close, low, high], ...]
+                    seriesSection.appendChild(createCandlestickDataEditor(`series.${index}.data`, series.data));
+                } else {
+                    // Line/Bar: [number, ...]
+                    seriesSection.appendChild(createDataArrayEditor(`series.${index}.data`, series.data, 'Data Values', 'number'));
+                }
+            }
+            
+            container.appendChild(seriesSection);
+        });
+    }
+}
+
+// Create a field section container
+function createFieldSection(title) {
+    const section = document.createElement('div');
+    section.className = 'field-section';
+    
+    const heading = document.createElement('h3');
+    heading.textContent = title;
+    section.appendChild(heading);
+    
+    return section;
+}
+
+// Create a form field
+function createField(type, path, value, label, options = null) {
+    const row = document.createElement('div');
+    row.className = 'field-row';
+    
+    const labelEl = document.createElement('label');
+    labelEl.textContent = label;
+    row.appendChild(labelEl);
+    
+    let input;
+    if (type === 'select' && options) {
+        input = document.createElement('select');
+        options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt;
+            option.textContent = opt.charAt(0).toUpperCase() + opt.slice(1);
+            if (opt === value) option.selected = true;
+            input.appendChild(option);
+        });
+    } else {
+        input = document.createElement('input');
+        input.type = type;
+        input.value = value;
+    }
+    
+    input.dataset.configPath = path;
+    input.addEventListener('change', syncFormToJSON);
+    
+    row.appendChild(input);
+    return row;
+}
+
+// Create data array editor (for simple arrays)
+function createDataArrayEditor(path, data, label, inputType = 'text') {
+    const container = document.createElement('div');
+    
+    const labelEl = document.createElement('label');
+    labelEl.textContent = label;
+    labelEl.style.display = 'block';
+    labelEl.style.marginBottom = '0.5rem';
+    labelEl.style.fontWeight = '600';
+    container.appendChild(labelEl);
+    
+    const editor = document.createElement('div');
+    editor.className = 'data-editor';
+    editor.dataset.configPath = path;
+    editor.dataset.inputType = inputType;
+    
+    data.forEach((value, index) => {
+        editor.appendChild(createDataRow(value, index, inputType));
+    });
+    
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-data-btn';
+    addBtn.textContent = '+ Add Value';
+    addBtn.onclick = () => {
+        const newIndex = editor.querySelectorAll('.data-row').length;
+        editor.insertBefore(createDataRow('', newIndex, inputType), addBtn);
+        syncFormToJSON();
+    };
+    editor.appendChild(addBtn);
+    
+    container.appendChild(editor);
+    return container;
+}
+
+// Create a single data row
+function createDataRow(value, index, inputType) {
+    const row = document.createElement('div');
+    row.className = 'data-row';
+    
+    const input = document.createElement('input');
+    input.type = inputType;
+    input.value = value;
+    input.dataset.index = index;
+    input.addEventListener('change', syncFormToJSON);
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = '×';
+    removeBtn.onclick = () => {
+        row.remove();
+        syncFormToJSON();
+    };
+    
+    row.appendChild(input);
+    row.appendChild(removeBtn);
+    return row;
+}
+
+// Create pie chart data editor
+function createPieDataEditor(path, data) {
+    const container = document.createElement('div');
+    
+    const labelEl = document.createElement('label');
+    labelEl.textContent = 'Pie Data';
+    labelEl.style.display = 'block';
+    labelEl.style.marginBottom = '0.5rem';
+    labelEl.style.fontWeight = '600';
+    container.appendChild(labelEl);
+    
+    const editor = document.createElement('div');
+    editor.className = 'data-editor';
+    editor.dataset.configPath = path;
+    editor.dataset.dataType = 'pie';
+    
+    data.forEach((item, index) => {
+        editor.appendChild(createPieDataRow(item, index));
+    });
+    
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-data-btn';
+    addBtn.textContent = '+ Add Slice';
+    addBtn.onclick = () => {
+        const newIndex = editor.querySelectorAll('.data-row').length;
+        editor.insertBefore(createPieDataRow({value: 0, name: ''}, newIndex), addBtn);
+        syncFormToJSON();
+    };
+    editor.appendChild(addBtn);
+    
+    container.appendChild(editor);
+    return container;
+}
+
+// Create pie data row
+function createPieDataRow(item, index) {
+    const row = document.createElement('div');
+    row.className = 'data-row';
+    
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.placeholder = 'Name';
+    nameInput.value = item.name || '';
+    nameInput.dataset.index = index;
+    nameInput.dataset.field = 'name';
+    nameInput.addEventListener('change', syncFormToJSON);
+    
+    const valueInput = document.createElement('input');
+    valueInput.type = 'number';
+    valueInput.placeholder = 'Value';
+    valueInput.value = item.value || 0;
+    valueInput.dataset.index = index;
+    valueInput.dataset.field = 'value';
+    valueInput.addEventListener('change', syncFormToJSON);
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = '×';
+    removeBtn.onclick = () => {
+        row.remove();
+        syncFormToJSON();
+    };
+    
+    row.appendChild(nameInput);
+    row.appendChild(valueInput);
+    row.appendChild(removeBtn);
+    return row;
+}
+
+// Create scatter chart data editor
+function createScatterDataEditor(path, data) {
+    const container = document.createElement('div');
+    
+    const labelEl = document.createElement('label');
+    labelEl.textContent = 'Scatter Points (X, Y)';
+    labelEl.style.display = 'block';
+    labelEl.style.marginBottom = '0.5rem';
+    labelEl.style.fontWeight = '600';
+    container.appendChild(labelEl);
+    
+    const editor = document.createElement('div');
+    editor.className = 'data-editor';
+    editor.dataset.configPath = path;
+    editor.dataset.dataType = 'scatter';
+    
+    data.forEach((point, index) => {
+        editor.appendChild(createScatterDataRow(point, index));
+    });
+    
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-data-btn';
+    addBtn.textContent = '+ Add Point';
+    addBtn.onclick = () => {
+        const newIndex = editor.querySelectorAll('.data-row').length;
+        editor.insertBefore(createScatterDataRow([0, 0], newIndex), addBtn);
+        syncFormToJSON();
+    };
+    editor.appendChild(addBtn);
+    
+    container.appendChild(editor);
+    return container;
+}
+
+// Create scatter data row
+function createScatterDataRow(point, index) {
+    const row = document.createElement('div');
+    row.className = 'data-row';
+    
+    const xInput = document.createElement('input');
+    xInput.type = 'number';
+    xInput.placeholder = 'X';
+    xInput.value = point[0] || 0;
+    xInput.dataset.index = index;
+    xInput.dataset.field = '0';
+    xInput.addEventListener('change', syncFormToJSON);
+    
+    const yInput = document.createElement('input');
+    yInput.type = 'number';
+    yInput.placeholder = 'Y';
+    yInput.value = point[1] || 0;
+    yInput.dataset.index = index;
+    yInput.dataset.field = '1';
+    yInput.addEventListener('change', syncFormToJSON);
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = '×';
+    removeBtn.onclick = () => {
+        row.remove();
+        syncFormToJSON();
+    };
+    
+    row.appendChild(xInput);
+    row.appendChild(yInput);
+    row.appendChild(removeBtn);
+    return row;
+}
+
+// Create candlestick chart data editor
+function createCandlestickDataEditor(path, data) {
+    const container = document.createElement('div');
+    
+    const labelEl = document.createElement('label');
+    labelEl.textContent = 'Candlestick Data (Open, Close, Low, High)';
+    labelEl.style.display = 'block';
+    labelEl.style.marginBottom = '0.5rem';
+    labelEl.style.fontWeight = '600';
+    container.appendChild(labelEl);
+    
+    const editor = document.createElement('div');
+    editor.className = 'data-editor';
+    editor.dataset.configPath = path;
+    editor.dataset.dataType = 'candlestick';
+    
+    data.forEach((candle, index) => {
+        editor.appendChild(createCandlestickDataRow(candle, index));
+    });
+    
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-data-btn';
+    addBtn.textContent = '+ Add Candle';
+    addBtn.onclick = () => {
+        const newIndex = editor.querySelectorAll('.data-row').length;
+        editor.insertBefore(createCandlestickDataRow([0, 0, 0, 0], newIndex), addBtn);
+        syncFormToJSON();
+    };
+    editor.appendChild(addBtn);
+    
+    container.appendChild(editor);
+    return container;
+}
+
+// Create candlestick data row
+function createCandlestickDataRow(candle, index) {
+    const row = document.createElement('div');
+    row.className = 'data-row';
+    
+    const fields = ['Open', 'Close', 'Low', 'High'];
+    fields.forEach((field, i) => {
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.placeholder = field;
+        input.value = candle[i] || 0;
+        input.dataset.index = index;
+        input.dataset.field = i.toString();
+        input.style.flex = '1';
+        input.addEventListener('change', syncFormToJSON);
+        row.appendChild(input);
+    });
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = '×';
+    removeBtn.onclick = () => {
+        row.remove();
+        syncFormToJSON();
+    };
+    
+    row.appendChild(removeBtn);
+    return row;
+}
+
+// Sync form values to JSON editor
+function syncFormToJSON() {
+    try {
+        const config = JSON.parse(document.getElementById('chart-config').value || '{}');
+        
+        // Update simple fields
+        document.querySelectorAll('[data-config-path]').forEach(input => {
+            if (input.classList.contains('data-editor')) return; // Skip data editors
+            
+            const path = input.dataset.configPath;
+            const value = input.type === 'number' ? parseFloat(input.value) || 0 : input.value;
+            setNestedValue(config, path, value);
+        });
+        
+        // Update data arrays
+        document.querySelectorAll('.data-editor').forEach(editor => {
+            const path = editor.dataset.configPath;
+            const dataType = editor.dataset.dataType;
+            const inputType = editor.dataset.inputType;
+            
+            let data = [];
+            
+            if (dataType === 'pie') {
+                // Pie data: [{value, name}, ...]
+                editor.querySelectorAll('.data-row').forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    if (inputs.length === 2) {
+                        data.push({
+                            name: inputs[0].value,
+                            value: parseFloat(inputs[1].value) || 0
+                        });
+                    }
+                });
+            } else if (dataType === 'scatter') {
+                // Scatter: [[x, y], ...]
+                editor.querySelectorAll('.data-row').forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    if (inputs.length === 2) {
+                        data.push([
+                            parseFloat(inputs[0].value) || 0,
+                            parseFloat(inputs[1].value) || 0
+                        ]);
+                    }
+                });
+            } else if (dataType === 'candlestick') {
+                // Candlestick: [[open, close, low, high], ...]
+                editor.querySelectorAll('.data-row').forEach(row => {
+                    const inputs = row.querySelectorAll('input[type="number"]');
+                    if (inputs.length === 4) {
+                        data.push([
+                            parseFloat(inputs[0].value) || 0,
+                            parseFloat(inputs[1].value) || 0,
+                            parseFloat(inputs[2].value) || 0,
+                            parseFloat(inputs[3].value) || 0
+                        ]);
+                    }
+                });
+            } else {
+                // Simple array
+                editor.querySelectorAll('.data-row input').forEach(input => {
+                    const value = inputType === 'number' ? (parseFloat(input.value) || 0) : input.value;
+                    data.push(value);
+                });
+            }
+            
+            setNestedValue(config, path, data);
+        });
+        
+        document.getElementById('chart-config').value = JSON.stringify(config, null, 2);
+        updatePreview(); // Update preview without regenerating form
+    } catch (e) {
+        console.error('Error syncing form to JSON:', e);
+    }
+}
+
+// Update preview without regenerating form (to avoid infinite loops)
+function updatePreview() {
+    try {
+        const configText = document.getElementById('chart-config').value;
+        const config = JSON.parse(configText);
+        chartInstance.setOption(config, true);
+    } catch (e) {
+        console.error('Error updating preview:', e);
+    }
+}
+
+// Helper to set nested object value by path string
+function setNestedValue(obj, path, value) {
+    const parts = path.split('.');
+    let current = obj;
+    
+    for (let i = 0; i < parts.length - 1; i++) {
+        const part = parts[i];
+        if (!current[part]) {
+            current[part] = {};
+        }
+        current = current[part];
+    }
+    
+    current[parts[parts.length - 1]] = value;
+}
+
 // Make chart responsive
 window.addEventListener('resize', () => {
-    if (previewChart) {
-        previewChart.resize();
+    if (chartInstance) {
+        chartInstance.resize();
     }
 });
 </script>
