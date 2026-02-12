@@ -8,12 +8,12 @@
  * - GET  /api/charts/{chartId}      - Retrieve chart configuration
  * - POST /api/charts/{chartId}      - Save/update chart configuration
  * - GET  /api/charts                - List all chart IDs
+ * 
+ * Required Secrets (set in Bunny.net Edge Script settings):
+ * - DATABASE_URL - Base URL for your storage (e.g., https://storage.bunnycdn.com/your-zone/charts)
+ * - DATABASE_ACCESS_TOKEN - API key for write operations
+ * - DATABASE_READ_ONLY_ACCESS_TOKEN - API key for read operations (optional, will use ACCESS_TOKEN if not set)
  */
-
-// Your Bunny.net Storage API credentials
-const STORAGE_API_KEY = 'YOUR_BUNNY_STORAGE_API_KEY';
-const STORAGE_ZONE_NAME = 'YOUR_STORAGE_ZONE';
-const STORAGE_BASE_URL = `https://storage.bunnycdn.com/${STORAGE_ZONE_NAME}/charts`;
 
 // CORS headers for your domain
 const CORS_HEADERS = {
@@ -23,7 +23,19 @@ const CORS_HEADERS = {
 };
 
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
+    // Access environment variables from secrets
+    const DATABASE_URL = env.DATABASE_URL;
+    const DATABASE_ACCESS_TOKEN = env.DATABASE_ACCESS_TOKEN;
+    const DATABASE_READ_ONLY_ACCESS_TOKEN = env.DATABASE_READ_ONLY_ACCESS_TOKEN || env.DATABASE_ACCESS_TOKEN;
+    
+    // Validate that required secrets are set
+    if (!DATABASE_URL || !DATABASE_ACCESS_TOKEN) {
+      return jsonResponse({ 
+        error: 'Server configuration error: Missing required secrets' 
+      }, 500);
+    }
+    
     const url = new URL(request.url);
     const path = url.pathname;
     
@@ -42,7 +54,7 @@ export default {
       // GET /api/charts/{chartId} - Retrieve chart config
       if (request.method === 'GET' && chartIdMatch) {
         const chartId = chartIdMatch[1];
-        return await getChart(chartId);
+        return await getChart(chartId, DATABASE_URL, DATABASE_READ_ONLY_ACCESS_TOKEN);
       }
       
       // POST /api/charts/{chartId} - Save chart config
@@ -50,18 +62,18 @@ export default {
         const chartId = chartIdMatch[1];
         const apiKey = request.headers.get('X-API-Key');
         
-        // Simple API key validation (use environment variables in production)
-        if (!apiKey || apiKey !== 'YOUR_SECRET_API_KEY') {
+        // Validate API key using the DATABASE_ACCESS_TOKEN
+        if (!apiKey || apiKey !== DATABASE_ACCESS_TOKEN) {
           return jsonResponse({ error: 'Unauthorized' }, 401);
         }
         
         const data = await request.json();
-        return await saveChart(chartId, data);
+        return await saveChart(chartId, data, DATABASE_URL, DATABASE_ACCESS_TOKEN);
       }
       
       // GET /api/charts - List all charts
       if (request.method === 'GET' && path === '/api/charts') {
-        return await listCharts();
+        return await listCharts(DATABASE_URL, DATABASE_READ_ONLY_ACCESS_TOKEN);
       }
       
       return jsonResponse({ error: 'Not found' }, 404);
@@ -75,11 +87,11 @@ export default {
 /**
  * Retrieve chart configuration from storage
  */
-async function getChart(chartId) {
-  const response = await fetch(`${STORAGE_BASE_URL}/${chartId}.json`, {
+async function getChart(chartId, databaseUrl, accessToken) {
+  const response = await fetch(`${databaseUrl}/${chartId}.json`, {
     method: 'GET',
     headers: {
-      'AccessKey': STORAGE_API_KEY
+      'AccessKey': accessToken
     }
   });
   
@@ -117,7 +129,7 @@ async function getChart(chartId) {
  *   }
  * }
  */
-async function saveChart(chartId, data) {
+async function saveChart(chartId, data, databaseUrl, accessToken) {
   // Validate data structure
   if (!data.config || typeof data.config !== 'object') {
     return jsonResponse({ error: 'Invalid data: config object required' }, 400);
@@ -137,10 +149,10 @@ async function saveChart(chartId, data) {
   };
   
   // Save to Bunny Storage
-  const response = await fetch(`${STORAGE_BASE_URL}/${chartId}.json`, {
+  const response = await fetch(`${databaseUrl}/${chartId}.json`, {
     method: 'PUT',
     headers: {
-      'AccessKey': STORAGE_API_KEY,
+      'AccessKey': accessToken,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(chartData)
@@ -156,15 +168,15 @@ async function saveChart(chartId, data) {
 /**
  * List all available charts
  */
-async function listCharts() {
+async function listCharts(databaseUrl, accessToken) {
   // Note: Bunny Storage doesn't have a native list API
   // You'll need to maintain an index file or use a different approach
   // For MVP, return a hardcoded list or implement index management
   
-  const response = await fetch(`${STORAGE_BASE_URL}/index.json`, {
+  const response = await fetch(`${databaseUrl}/index.json`, {
     method: 'GET',
     headers: {
-      'AccessKey': STORAGE_API_KEY
+      'AccessKey': accessToken
     }
   });
   
