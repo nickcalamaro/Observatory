@@ -58,6 +58,12 @@ BunnySDK.net.http.serve(async (request) => {
       return await listCharts();
     }
     
+    // POST /api/charts - Create new chart (autoincrement ID)
+    if (request.method === 'POST' && path === '/api/charts') {
+      const data = await request.json();
+      return await createChart(data);
+    }
+    
     // GET /api/charts/types - Get all available chart types
     if (request.method === 'GET' && path === '/api/charts/types') {
       return await getChartTypes();
@@ -71,18 +77,18 @@ BunnySDK.net.http.serve(async (request) => {
     }
     
     // GET /api/charts/{chartId} - Retrieve chart config
-    // POST /api/charts/{chartId} - Save chart config
-    const chartIdMatch = path.match(/^\/api\/charts\/([a-zA-Z0-9-_]+)$/);
+    // PUT /api/charts/{chartId} - Update existing chart
+    const chartIdMatch = path.match(/^\/api\/charts\/(\d+)$/);
     
     if (request.method === 'GET' && chartIdMatch) {
-      const chartId = chartIdMatch[1];
+      const chartId = parseInt(chartIdMatch[1]);
       return await getChart(chartId);
     }
     
-    if (request.method === 'POST' && chartIdMatch) {
-      const chartId = chartIdMatch[1];
+    if (request.method === 'PUT' && chartIdMatch) {
+      const chartId = parseInt(chartIdMatch[1]);
       const data = await request.json();
-      return await saveChart(chartId, data);
+      return await updateChart(chartId, data);
     }
     
     return jsonResponse({ error: 'Not found' }, 404);
@@ -161,9 +167,8 @@ async function saveChart(chartId, data) {
     
     // Upsert chart
     await client.execute({
-      sql: `INSERT INTO charts (chart_id, type, title, description, config, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(chart_id) DO UPDATE SET
+      sql: `INSERT INTO charts (type, title, description, config, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?)
               type = excluded.type,
               title = excluded.title,
               description = excluded.description,
