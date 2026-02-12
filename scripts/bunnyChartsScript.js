@@ -2,7 +2,7 @@
  * Bunny.net Edge Script API for Chart Data Management
  * 
  * Deploy this to Bunny.net Edge Scripting
- * Database: BunnyDB (libsql)
+ * Database: BunnyDB (libsql) via HTTP API
  * 
  * Endpoints:
  * - GET  /api/charts/{chartId}      - Retrieve chart configuration
@@ -10,11 +10,9 @@
  * - GET  /api/charts                - List all chart IDs
  * 
  * Required Secrets (set in Bunny.net Edge Script settings):
- * - DATABASE_URL - libsql database URL (e.g., libsql://your-db.lite.bunnydb.net/)
+ * - DATABASE_URL - BunnyDB HTTP URL (e.g., https://01KH8M6XFVPK740TVDY8W4WFPN-observatory.lite.bunnydb.net/)
  * - DATABASE_ACCESS_TOKEN - API key for database access
  */
-
-import { createClient } from '@libsql/client/web';
 
 export default {
   async fetch(request, env) {
@@ -28,12 +26,6 @@ export default {
         error: 'Server configuration error: Missing required secrets' 
       }, 500);
     }
-    
-    // Create database client
-    const db = createClient({
-      url: DATABASE_URL,
-      authToken: DATABASE_ACCESS_TOKEN,
-    });
     
     const url = new URL(request.url);
     const path = url.pathname;
@@ -63,77 +55,77 @@ export default {
       // POST /api/charts/{chartId} - Save chart config
       if (request.method === 'POST' && chartIdMatch) {
         const chartId = chartIdMatch[1];
+        chartId, DATABASE_URL, DATABASE_ACCESS_TOKEN);
+      }
+      
+      // POST /api/charts/{chartId} - Save chart config
+      if (request.method === 'POST' && chartIdMatch) {
+        const chartId = chartIdMatch[1];
         
         // TODO: Add proper admin session authentication here
         // For now, allow POST requests without API key validation
         
         const data = await request.json();
-        return await saveChart(db, chartId, data);
+        return await saveChart(chartId, data, DATABASE_URL, DATABASE_ACCESS_TOKEN);
       }
       
       // GET /api/charts - List all charts
       if (request.method === 'GET' && path === '/api/charts') {
-        return await listCharts(db);
-      }
-      
-      return jsonResponse({ error: 'Not found' }, 404);
-      
-    } catch (error) {
-      return jsonResponse({ error: error.message }, 500);
+        return await listCharts(DATABASE_URL, DATABASE_ACCESS_TOKEN error.message }, 500);
     }
   }
 };
 
 
 /**
- * Retrieve chart configuration from database
+ * Execute SQL query via BunnyDB HTTP API
  */
-async function getChart(db, chartId) {
-  const result = await db.execute({
-    sql: 'SELECT * FROM charts WHERE chart_id = ?',
-    args: [chartId]
+async function executeSQL(sql, args, databaseUrl, accessToken) {
+  const response = await fetch(databaseUrl, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      statements: [{
+        q: sql,
+        params: args || []
+      }]
+    })
   });
   
-  if (result.rows.length === 0) {
-    return jsonResponse({ error: 'Chart not found' }, 404);
+  if (!response.ok) {
+    throw new Error(`Database error: ${response.status} ${response.statusText}`);
   }
   
-  const row = result.rows[0];
-  const chartData = {
-    chartId: row.chart_id,
-    type: row.type,
-    metadata: {
-      title: row.title,
-      description: row.description,
-      created: row.created_at,
-      updated: row.updated_at
-    },
-    config: JSON.parse(row.config)
-  };
-  
-  return jsonResponse(chartData);
+  const result = await response.json();
+  return result[0];
 }
 
 /**
- * Save chart configuration to database
- * 
- * Expected data format:
- * {
- *   "type": "line|bar|pie|scatter|...",  // ECharts type
- *   "metadata": {
- *     "title": "Chart Title",
- *     "description": "Chart description"
- *   },
- *   "config": {
- *     // Full ECharts option object
- *     "title": { "text": "..." },
- *     "series": [...],
- *     "xAxis": [...],
- *     // ... any ECharts configuration
- *   }
- * }
+ * Retrieve chart configuration from database
  */
-async function saveChart(db, chartId, data) {
+async function getChart(chartId, databaseUrl, accessToken) {
+  const result = await executeSQL(
+    'SELECT * FROM charts WHERE chart_id = ?',
+    [chartId],
+    databaseUrl,
+    accessToken
+  );
+  
+  if (!result.results.rows || result.results.rows.length === 0) {
+    return jsonResponse({ error: 'Chart not found' }, 404);
+  }
+  
+  const row = result.results.rows[0];
+  const chartData = {
+    chartId: row[0], // chart_id
+    type: row[1],    // type
+    metadata: {
+      title: row[2],       // title
+      description: row[3], // description
+      created: row[5],   chartId, data, databaseUrl, accessToken) {
   // Validate data structure
   if (!data.config || typeof data.config !== 'object') {
     return jsonResponse({ error: 'Invalid data: config object required' }, 400);
@@ -146,16 +138,49 @@ async function saveChart(db, chartId, data) {
   const configJson = JSON.stringify(data.config);
   
   // Check if chart exists
-  const existingResult = await db.execute({
-    sql: 'SELECT created_at FROM charts WHERE chart_id = ?',
-    args: [chartId]
-  });
+  const existingResult = await executeSQL(
+    'SELECT created_at FROM charts WHERE chart_id = ?',
+    [chartId],
+    databaseUrl,
+    accessToken
+  );
   
-  const createdAt = existingResult.rows.length > 0 
-    ? existingResult.rows[0].created_at 
+  const createdAt = existingResult.results.rows && existingResult.results.rows.length > 0
+    ? existingResult.results.rows[0][0]
     : now;
   
   // Upsert chart
+  await executeSQL(
+    `INSERT INTO charts (chart_id, type, title, description, config, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(chart_id) DO UPDATE SET
+       type = excluded.type,
+       title = excluded.title,
+       description = excluded.description,
+       config = excluded.config,
+       updated_at = excluded.updated_at`,
+    [chartId, type, title, description, configJson, createdAt, now],
+    databaseUrl,
+    accessToken
+  onst type = data.type || 'line';
+  const title = data.metadata?.title || chartId;
+  const description = data.metadata?.description || '';
+  const configJson = JSON.stringify(data.config);
+  
+  // Check if chart exists
+  const existingResult = awatabaseUrl, accessToken) {
+  const result = await executeSQL(
+    'SELECT chart_id, type, title, updated_at FROM charts ORDER BY updated_at DESC',
+    [],
+    databaseUrl,
+    accessToken
+  );
+  
+  const charts = (result.results.rows || []).map(row => ({
+    chartId: row[0],  // chart_id
+    type: row[1],     // type
+    title: row[2],    // title
+    updated: row[3]   // 
   await db.execute({
     sql: `
       INSERT INTO charts (chart_id, type, title, description, config, created_at, updated_at)
