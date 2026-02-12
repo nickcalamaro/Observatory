@@ -17,20 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '22'
-
-      - uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
-
-      - name: Install
-        run: "npm install"
-
-      - name: Build
-        run: "npm run build"
-
       - name: Publish Charts Script to Bunny
         uses: "BunnyWay/actions/deploy-script@main"
         with:
