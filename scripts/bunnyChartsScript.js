@@ -140,9 +140,9 @@ async function getChart(chartId) {
 }
 
 /**
- * Save chart configuration to database
+ * Create new chart with auto-increment ID
  */
-async function saveChart(chartId, data) {
+async function createChart(data) {
   try {
     // Validate data structure
     if (!data.config || typeof data.config !== 'object') {
@@ -151,35 +151,53 @@ async function saveChart(chartId, data) {
     
     const now = new Date().toISOString();
     const type = data.type || 'line';
-    const title = data.metadata?.title || chartId;
+    const title = data.metadata?.title || 'Untitled Chart';
     const description = data.metadata?.description || '';
     const configJson = JSON.stringify(data.config);
     
-    // Check if chart exists to preserve created_at
-    const existingResult = await client.execute({
-      sql: 'SELECT created_at FROM charts WHERE chart_id = ?',
-      args: [chartId],
+    // Insert without chart_id (let database auto-increment)
+    const result = await client.execute({
+      sql: `INSERT INTO charts (type, title, description, config, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?)`,
+      args: [type, title, description, configJson, now, now],
     });
     
-    const createdAt = existingResult.rows.length > 0
-      ? existingResult.rows[0].created_at
-      : now;
+    const chartId = result.lastInsertRowid;
     
-    // Upsert chart
+    return jsonResponse({ success: true, chartId, created: now });
+  } catch (error) {
+    console.error('Error creating chart:', error);
+    throw error;
+  }
+}
+
+/**
+ * Update existing chart
+ */
+async function updateChart(chartId, data) {
+  try {
+    // Validate data structure
+    if (!data.config || typeof data.config !== 'object') {
+      return jsonResponse({ error: 'Invalid data: config object required' }, 400);
+    }
+    
+    const now = new Date().toISOString();
+    const type = data.type || 'line';
+    const title = data.metadata?.title || 'Untitled Chart';
+    const description = data.metadata?.description || '';
+    const configJson = JSON.stringify(data.config);
+    
+    // Update existing chart
     await client.execute({
-      sql: `INSERT INTO charts (type, title, description, config, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?)
-              type = excluded.type,
-              title = excluded.title,
-              description = excluded.description,
-              config = excluded.config,
-              updated_at = excluded.updated_at`,
-      args: [chartId, type, title, description, configJson, createdAt, now],
+      sql: `UPDATE charts 
+            SET type = ?, title = ?, description = ?, config = ?, updated_at = ?
+            WHERE chart_id = ?`,
+      args: [type, title, description, configJson, now, chartId],
     });
     
     return jsonResponse({ success: true, chartId, updated: now });
   } catch (error) {
-    console.error('Error saving chart:', error);
+    console.error('Error updating chart:', error);
     throw error;
   }
 }
