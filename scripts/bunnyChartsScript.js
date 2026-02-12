@@ -87,22 +87,6 @@ export default {
   }
 };
 
-/**
- * Initialize database table if it doesn't exist
- */
-async function initializeDatabase(db) {
-  await db.execute(`
-    CREATE TABLE IF NOT EXISTS charts (
-      chart_id TEXT PRIMARY KEY,
-      type TEXT NOT NULL,
-      title TEXT,
-      description TEXT,
-      config TEXT NOT NULL,
-      created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL
-    )
-  `);
-}
 
 /**
  * Retrieve chart configuration from database
@@ -128,7 +112,13 @@ async function getChart(db, chartId) {
       updated: row.updated_at
     },
     config: JSON.parse(row.config)
-  };database
+  };
+  
+  return jsonResponse(chartData);
+}
+
+/**
+ * Save chart configuration to database
  * 
  * Expected data format:
  * {
@@ -183,36 +173,25 @@ async function saveChart(db, chartId, data) {
     args: [chartId, type, title, description, configJson, createdAt, now]
   });
   
-  return jsonResponse({ success: true, chartId, updated: now });   },
-      body: JSON.stringify(index)
-    });
-  } catch (e) {
-    // Index update failed, but chart was saved
-    console.error('Failed to update index:', e);
-  }
+  return jsonResponse({ success: true, chartId, updated: now });
 }
 
 /**
- * List all available charts
+ * List all available charts from database
  */
-async function listCharts(databaseUrl, accessToken) {
-  // Note: Bunny Storage doesn't have a native list API
-  // You'll need to maintain an index file or use a different approach
-  // For MVP, return a hardcoded list or implement index management
+async function listCharts(db) {
+  const result = await db.execute(
+    'SELECT chart_id, type, title, updated_at FROM charts ORDER BY updated_at DESC'
+  );
   
-  const response = await fetch(`${databaseUrl}/index.json`, {
-    method: 'GET',
-    headers: {
-      'AccessKey': accessToken
-    }
-  });
+  const charts = result.rows.map(row => ({
+    chartId: row.chart_id,
+    type: row.type,
+    title: row.title,
+    updated: row.updated_at
+  }));
   
-  if (response.status === 404) {
-    return jsonResponse({ charts: [] });
-  }
-  
-  const index = await response.json();
-  return jsonResponse(index);
+  return jsonResponse({ charts });
 }
 
 /**
@@ -229,18 +208,3 @@ function jsonResponse(data, status = 200) {
     }
   });
 }
- from database
- */
-async function listCharts(db) {
-  const result = await db.execute(
-    'SELECT chart_id, type, title, updated_at FROM charts ORDER BY updated_at DESC'
-  );
-  
-  const charts = result.rows.map(row => ({
-    chartId: row.chart_id,
-    type: row.type,
-    title: row.title,
-    updated: row.updated_at
-  }));
-  
-  return jsonResponse({ charts }
