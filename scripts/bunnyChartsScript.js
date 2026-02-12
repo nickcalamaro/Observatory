@@ -72,6 +72,13 @@ BunnySDK.net.http.serve(async (request) => {
       return await listCharts();
     }
     
+    // GET /api/charts/templates/:type - Get template for chart type
+    const templateMatch = path.match(/^\/api\/charts\/templates\/([a-z]+)$/);
+    if (request.method === 'GET' && templateMatch) {
+      const chartType = templateMatch[1];
+      return await getTemplate(chartType);
+    }
+    
     return jsonResponse({ error: 'Not found' }, 404);
     
   } catch (error) {
@@ -186,6 +193,31 @@ async function listCharts() {
     return jsonResponse({ charts });
   } catch (error) {
     console.error('Error listing charts:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get chart template configuration for a specific chart type
+ */
+async function getTemplate(chartType) {
+  try {
+    const result = await client.execute({
+      sql: 'SELECT chart_type, template_config FROM chart_templates WHERE chart_type = ?',
+      args: [chartType],
+    });
+    
+    if (result.rows.length === 0) {
+      return jsonResponse({ error: 'Template not found for this chart type' }, 404);
+    }
+    
+    const row = result.rows[0];
+    return jsonResponse({
+      type: row.chart_type,
+      config: JSON.parse(row.template_config),
+    });
+  } catch (error) {
+    console.error('Error fetching template:', error);
     throw error;
   }
 }
