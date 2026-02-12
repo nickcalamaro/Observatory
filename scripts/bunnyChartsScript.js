@@ -51,25 +51,16 @@ BunnySDK.net.http.serve(async (request) => {
   }
 
   try {
-    // Route matching
-    const chartIdMatch = path.match(/^\/api\/charts\/([a-zA-Z0-9-_]+)$/);
-    
-    // GET /api/charts/{chartId} - Retrieve chart config
-    if (request.method === 'GET' && chartIdMatch) {
-      const chartId = chartIdMatch[1];
-      return await getChart(chartId);
-    }
-    
-    // POST /api/charts/{chartId} - Save chart config
-    if (request.method === 'POST' && chartIdMatch) {
-      const chartId = chartIdMatch[1];
-      const data = await request.json();
-      return await saveChart(chartId, data);
-    }
+    // Route matching - check specific routes before generic patterns
     
     // GET /api/charts - List all charts
     if (request.method === 'GET' && path === '/api/charts') {
       return await listCharts();
+    }
+    
+    // GET /api/charts/types - Get all available chart types
+    if (request.method === 'GET' && path === '/api/charts/types') {
+      return await getChartTypes();
     }
     
     // GET /api/charts/templates/:type - Get template for chart type
@@ -79,9 +70,19 @@ BunnySDK.net.http.serve(async (request) => {
       return await getTemplate(chartType);
     }
     
-    // GET /api/charts/types - Get all available chart types
-    if (request.method === 'GET' && path === '/api/charts/types') {
-      return await getChartTypes();
+    // GET /api/charts/{chartId} - Retrieve chart config
+    // POST /api/charts/{chartId} - Save chart config
+    const chartIdMatch = path.match(/^\/api\/charts\/([a-zA-Z0-9-_]+)$/);
+    
+    if (request.method === 'GET' && chartIdMatch) {
+      const chartId = chartIdMatch[1];
+      return await getChart(chartId);
+    }
+    
+    if (request.method === 'POST' && chartIdMatch) {
+      const chartId = chartIdMatch[1];
+      const data = await request.json();
+      return await saveChart(chartId, data);
     }
     
     return jsonResponse({ error: 'Not found' }, 404);
