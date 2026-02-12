@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Hugo site with ECharts",
   "scripts": {
-    "dev": "hugo server -D"
+    "dev": "hugo server -D",
+    "build": "hugo --minify"
   },
   "dependencies": {
     "echarts": "^5.4.3"
