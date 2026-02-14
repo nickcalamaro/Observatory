@@ -2,6 +2,25 @@ baseURL = 'https://example.org/'
 languageCode = 'en-gb'
 title = 'The Observatory'
 
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+[menu]
+  [[menu.main]]
+    name = "Home"
+    url = "/"
+    weight = 1
+  [[menu.main]]
+    name = "Newsletter"
+    url = "/newsletter/"
+    weight = 2
+  [[menu.main]]
+    name = "Chart Admin"
+    url = "/admin/charts/"
+    weight = 3
+
 [module]
 [[module.imports]]
 disable = false

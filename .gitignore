@@ -25,3 +25,7 @@ Thumbs.db
 
 # Docker
 opt/
+
+
+# Resources
+resources/

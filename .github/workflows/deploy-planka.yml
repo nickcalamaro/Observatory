@@ -1,0 +1,73 @@
+name: Deploy Planka to Hetzner
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'opt/planka/**'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Deploy to Hetzner Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 46.224.193.169
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Create directory if it doesn't exist
+            mkdir -p /root/planka
+            
+            # Stop existing containers
+            cd /root/planka
+            docker compose down || true
+            
+      - name: Copy docker-compose.yml to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: 46.224.193.169
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "opt/planka/docker-compose.yml"
+          target: "/root/"
+          strip_components: 2
+          
+      - name: Start Planka containers
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 46.224.193.169
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /root/planka
+            
+            # Pull latest images
+            docker compose pull
+            
+            # Start containers
+            docker compose up -d
+            
+            # Show status
+            echo "Deployment complete!"
+            docker compose ps
+            
+      - name: Health check
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 46.224.193.169
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Wait for services to be healthy
+            sleep 10
+            cd /root/planka
+            docker compose ps
+            docker compose logs --tail=50
