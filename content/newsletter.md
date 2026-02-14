@@ -1,6 +1,6 @@
----
-title: "Newsletter"
-draft: false
----
++++
+title = "Newsletter"
+draft = false
++++
 
 Newsletter page.
