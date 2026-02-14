@@ -1,4 +1,6 @@
 ---
 title: "Newsletter"
-layout: "newsletter"
+draft: false
 ---
+
+Newsletter page.

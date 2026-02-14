@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="{{ site.Language.Lang }}" class="sans-serif">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ block "title" . }}{{ .Title }} | {{ site.Title }}{{ end }}</title>
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"/>
+    {{ block "header" . }}{{ end }}
+  </head>
+  <body class="ma0 avenir bg-near-white">
+    {{ partial "site-header.html" . }}
+    <main role="main">
+      {{ block "main" . }}{{ end }}
+    </main>
+    {{ partial "site-footer.html" . }}
+  </body>
+</html>
