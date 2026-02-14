@@ -1,288 +1,9 @@
 {{ define "header" }}
+   <link rel="stylesheet" href="/css/chart-admin.css">
    {{ partial "site-header.html" . }}
 {{ end }}
 
 {{ define "main" }}
-<style>
-    .admin-container {
-        max-width: 1400px;
-        margin: 2rem auto;
-        padding: 0 1rem;
-    }
-    .admin-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-    }
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-        margin-bottom: 2rem;
-    }
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: #333;
-    }
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 1rem;
-        font-family: inherit;
-    }
-    .form-group textarea {
-        font-family: 'Courier New', monospace;
-        min-height: 400px;
-        resize: vertical;
-    }
-    .btn {
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-    .btn-primary {
-        background-color: #357edd;
-        color: white;
-    }
-    .btn-primary:hover {
-        background-color: #2868c7;
-    }
-    .btn-secondary {
-        background-color: #5a6169;
-        color: white;
-    }
-    .btn-secondary:hover {
-        background-color: #4a5159;
-    }
-    .preview-section {
-        margin-top: 2rem;
-        padding: 2rem;
-        background: #f7f7f7;
-        border-radius: 8px;
-    }
-    #chart-preview {
-        width: 100%;
-        height: 500px;
-        background: white;
-        border-radius: 4px;
-    }
-    .alert {
-        padding: 1rem;
-        margin-bottom: 1rem;
-        border-radius: 4px;
-    }
-    .alert-success {
-        background-color: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-    }
-    .alert-error {
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-    }
-    .hidden {
-        display: none;
-    }
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
-    }
-    .modal.active {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .modal-content {
-        background-color: white;
-        padding: 2rem;
-        border-radius: 8px;
-        max-width: 600px;
-        width: 90%;
-        max-height: 80vh;
-        overflow-y: auto;
-    }
-    .chart-list-item {
-        padding: 1rem;
-        margin: 0.5rem 0;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-    .chart-list-item:hover {
-        background-color: #f0f0f0;
-    }
-    .chart-list-item h3 {
-        margin: 0 0 0.5rem 0;
-    }
-    .chart-list-item p {
-        margin: 0;
-        color: #666;
-        font-size: 0.9rem;
-    }
-    .examples {
-        margin-top: 1rem;
-    }
-    .example-btn {
-        padding: 0.5rem 1rem;
-        margin-right: 0.5rem;
-        margin-bottom: 0.5rem;
-        background: #e9ecef;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.9rem;
-    }
-    .example-btn:hover {
-        background: #dee2e6;
-    }
-    .tabs {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-        border-bottom: 2px solid #ddd;
-    }
-    .tab {
-        padding: 0.75rem 1.5rem;
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-        font-weight: 500;
-        color: #666;
-        border-bottom: 3px solid transparent;
-        transition: all 0.2s;
-    }
-    .tab:hover {
-        color: #357edd;
-        background: #f7f7f7;
-    }
-    .tab.active {
-        color: #357edd;
-        border-bottom-color: #357edd;
-    }
-    .tab-content {
-        display: none;
-    }
-    .tab-content.active {
-        display: block;
-    }
-    .form-builder {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-    }
-    .field-section {
-        background: #f9f9f9;
-        padding: 1.5rem;
-        border-radius: 8px;
-        margin-bottom: 1rem;
-    }
-    .field-section h3 {
-        margin: 0 0 1rem 0;
-        font-size: 1.1rem;
-        color: #333;
-        border-bottom: 2px solid #ddd;
-        padding-bottom: 0.5rem;
-    }
-    .field-row {
-        display: grid;
-        grid-template-columns: 150px 1fr;
-        gap: 1rem;
-        align-items: center;
-        margin-bottom: 0.75rem;
-    }
-    .field-row label {
-        font-size: 0.9rem;
-        color: #555;
-        font-weight: 500;
-    }
-    .field-row input[type="text"],
-    .field-row input[type="number"],
-    .field-row select {
-        padding: 0.5rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 0.9rem;
-    }
-    .field-row input[type="color"] {
-        width: 60px;
-        height: 35px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    .field-row input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-    }
-    .data-editor {
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 1rem;
-        margin-top: 0.5rem;
-    }
-    .data-row {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-        align-items: center;
-    }
-    .data-row input {
-        flex: 1;
-        padding: 0.5rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 0.9rem;
-    }
-    .data-row button {
-        padding: 0.5rem 0.75rem;
-        background: #dc3545;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.9rem;
-    }
-    .data-row button:hover {
-        background: #c82333;
-    }
-    .add-data-btn {
-        padding: 0.5rem 1rem;
-        background: #28a745;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        margin-top: 0.5rem;
-    }
-    .add-data-btn:hover {
-        background: #218838;
-    }
-</style>
 
 <div class="admin-container">
     <div class="admin-header">
@@ -391,118 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadExample('gradient-area');
 });
 
-// Example configurations
-const examples = {
-    'gradient-area': {
-        color: ['#80FFA5', '#00DDFF', '#37A2FF', '#FF0087', '#FFBF00'],
-        title: {
-            text: 'Gradient Stacked Area Chart',
-            left: 'center',
-            top: 10
-        },
-        tooltip: {
-            trigger: 'axis',
-            axisPointer: {
-                type: 'cross',
-                label: { backgroundColor: '#6a7985' }
-            }
-        },
-        legend: {
-            data: ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5'],
-            top: 45
-        },
-        grid: { top: 100 },
-        toolbox: {
-            feature: { saveAsImage: {} }
-        },
-        xAxis: [{
-            type: 'category',
-            boundaryGap: false,
-            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-        }],
-        yAxis: [{ type: 'value' }],
-        series: [
-            {
-                name: 'Line 1',
-                type: 'line',
-                stack: 'Total',
-                smooth: true,
-                lineStyle: { width: 0 },
-                showSymbol: false,
-                areaStyle: {
-                    opacity: 0.8,
-                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                        { offset: 0, color: 'rgb(128, 255, 165)' },
-                        { offset: 1, color: 'rgb(1, 191, 236)' }
-                    ])
-                },
-                emphasis: { focus: 'series' },
-                data: [140, 232, 101, 264, 90, 340, 250]
-            },
-            {
-                name: 'Line 2',
-                type: 'line',
-                stack: 'Total',
-                smooth: true,
-                lineStyle: { width: 0 },
-                showSymbol: false,
-                areaStyle: {
-                    opacity: 0.8,
-                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                        { offset: 0, color: 'rgb(0, 221, 255)' },
-                        { offset: 1, color: 'rgb(77, 119, 255)' }
-                    ])
-                },
-                emphasis: { focus: 'series' },
-                data: [120, 282, 111, 234, 220, 340, 310]
-            }
-        ]
-    },
-    'bar': {
-        title: { text: 'Bar Chart Example' },
-        tooltip: {},
-        xAxis: {
-            type: 'category',
-            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-        },
-        yAxis: { type: 'value' },
-        series: [{
-            name: 'Sales',
-            type: 'bar',
-            data: [120, 200, 150, 80, 70, 110, 130],
-            itemStyle: {
-                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                    { offset: 0, color: '#83bff6' },
-                    { offset: 1, color: '#188df0' }
-                ])
-            }
-        }]
-    },
-    'pie': {
-        title: { text: 'Pie Chart Example', left: 'center' },
-        tooltip: { trigger: 'item' },
-        legend: { orient: 'vertical', left: 'left' },
-        series: [{
-            name: 'Access From',
-            type: 'pie',
-            radius: '50%',
-            data: [
-                { value: 1048, name: 'Search Engine' },
-                { value: 735, name: 'Direct' },
-                { value: 580, name: 'Email' },
-                { value: 484, name: 'Union Ads' },
-                { value: 300, name: 'Video Ads' }
-            ],
-            emphasis: {
-                itemStyle: {
-                    shadowBlur: 10,
-                    shadowOffsetX: 0,
-                    shadowColor: 'rgba(0, 0, 0, 0.5)'
-                }
-            }
-        }]
-    }
-};
 
 function loadExample(exampleName) {
     const config = examples[exampleName];
@@ -692,6 +301,10 @@ async function loadChartTypes() {
                 select.innerHTML = types.map(type => 
                     `<option value="${type.value}">${type.label}</option>`
                 ).join('');
+                
+                // Load the first template automatically
+                const firstType = types[0].value;
+                await loadTemplate(firstType);
             } else {
                 select.innerHTML = '<option value="">No chart types available</option>';
             }
@@ -705,10 +318,8 @@ async function loadChartTypes() {
     }
 }
 
-// Load template when chart type changes
-document.getElementById('chart-type').addEventListener('change', async function(e) {
-    const chartType = e.target.value;
-    
+// Load template function (extracted for reuse)
+async function loadTemplate(chartType) {
     if (!chartType) return;
     
     try {
@@ -717,15 +328,22 @@ document.getElementById('chart-type').addEventListener('change', async function(
         if (response.ok) {
             const data = await response.json();
             document.getElementById('chart-config').value = JSON.stringify(data.config, null, 2);
-            generateFormFields(data.config); // Regenerate form fields
+            generateFormFields(data.config);
             previewChart();
-            showAlert(`Loaded ${chartType} template`, 'success');
         } else {
-            // If no template exists, don't show error - user might want to create from scratch
             console.log(`No template found for ${chartType}`);
         }
     } catch (e) {
         console.error('Error loading template:', e);
+    }
+}
+
+// Load template when chart type changes
+document.getElementById('chart-type').addEventListener('change', async function(e) {
+    const chartType = e.target.value;
+    await loadTemplate(chartType);
+    if (chartType) {
+        showAlert(`Loaded ${chartType} template`, 'success');
     }
 });
 
@@ -826,14 +444,41 @@ function generateFormFields(config) {
     }
 }
 
-// Create a field section container
+// Create a field section container (collapsible)
 function createFieldSection(title) {
     const section = document.createElement('div');
-    section.className = 'field-section';
+    section.className = 'collapsible-section collapsed';
+    
+    const header = document.createElement('div');
+    header.className = 'collapsible-header';
+    header.onclick = function() {
+        section.classList.toggle('collapsed');
+    };
     
     const heading = document.createElement('h3');
     heading.textContent = title;
-    section.appendChild(heading);
+    header.appendChild(heading);
+    
+    const toggle = document.createElement('span');
+    toggle.className = 'collapsible-toggle';
+    header.appendChild(toggle);
+    
+    section.appendChild(header);
+    
+    // Create content container for fields
+    const content = document.createElement('div');
+    content.className = 'collapsible-content';
+    section.appendChild(content);
+    
+    // Override appendChild to add fields to content instead of section
+    const originalAppendChild = section.appendChild.bind(section);
+    section.appendChild = function(child) {
+        if (child !== header && child !== content) {
+            content.appendChild(child);
+        } else {
+            originalAppendChild(child);
+        }
+    };
     
     return section;
 }
