@@ -7,6 +7,20 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19
 }).addTo(map);
 
+// Store enumeration locations data
+let enumerationLocations = {};
+let geoJsonData = null;
+
+// Load enumeration locations
+fetch('/Observatory/data/enumeration_locations.json')
+  .then(response => response.json())
+  .then(data => {
+    enumerationLocations = data;
+  })
+  .catch(error => {
+    console.error('Error loading enumeration locations:', error);
+  });
+
 // Color scale for population density
 function getColor(density) {
   return density > 50000 ? '#800026' :
@@ -65,37 +79,63 @@ function createPopupContent(properties) {
     ? ((properties.population_2022 - properties.population_2012) / properties.population_2012 * 100).toFixed(1)
     : 'N/A';
   
-  return `
+  // Get location description if available
+  const locationInfo = enumerationLocations[properties.name];
+  const locationDescription = locationInfo ? locationInfo.description : null;
+  
+  let html = `
     <div class="popup-title">${properties.name}</div>
-    <div class="popup-row">
-      <span class="popup-label">Population 2022:</span>
-      <span class="popup-value">${properties.population_2022?.toLocaleString() || 'N/A'}</span>
-    </div>
-    <div class="popup-row">
-      <span class="popup-label">Population 2012:</span>
-      <span class="popup-value">${properties.population_2012?.toLocaleString() || 'N/A'}</span>
-    </div>
-    <div class="popup-row">
-      <span class="popup-label">Population 2001:</span>
-      <span class="popup-value">${properties.population_2001?.toLocaleString() || 'N/A'}</span>
-    </div>
-    <div class="popup-row">
-      <span class="popup-label">Change (2012-2022):</span>
-      <span class="popup-value" style="color: ${popChange2012_2022 >= 0 ? '#27ae60' : '#c0392b'}">${popChange2012_2022}%</span>
-    </div>
-    <div class="popup-row">
-      <span class="popup-label">Change (2001-2022):</span>
-      <span class="popup-value" style="color: ${popChange2001_2022 >= 0 ? '#27ae60' : '#c0392b'}">${popChange2001_2022}%</span>
-    </div>
-    <div class="popup-row">
-      <span class="popup-label">Area:</span>
-      <span class="popup-value">${properties.area_km2} km²</span>
-    </div>
-    <div class="popup-row">
-      <span class="popup-label">Density:</span>
-      <span class="popup-value">${properties.density_2022?.toLocaleString() || 'N/A'} /km²</span>
+    <div class="popup-section">
+      <div class="popup-row">
+        <span class="popup-label">Population 2022:</span>
+        <span class="popup-value">${properties.population_2022?.toLocaleString() || 'N/A'}</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">Population 2012:</span>
+        <span class="popup-value">${properties.population_2012?.toLocaleString() || 'N/A'}</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">Population 2001:</span>
+        <span class="popup-value">${properties.population_2001?.toLocaleString() || 'N/A'}</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">Change (2012-2022):</span>
+        <span class="popup-value" style="color: ${popChange2012_2022 >= 0 ? '#27ae60' : '#c0392b'}">${popChange2012_2022}%</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">Change (2001-2022):</span>
+        <span class="popup-value" style="color: ${popChange2001_2022 >= 0 ? '#27ae60' : '#c0392b'}">${popChange2001_2022}%</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">Area:</span>
+        <span class="popup-value">${properties.area_km2} km²</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">Density:</span>
+        <span class="popup-value">${properties.density_2022?.toLocaleString() || 'N/A'} /km²</span>
+      </div>
     </div>
   `;
+  
+  // Add locations if available
+  if (locationDescription) {
+    // Remove all parenthetical content for cleaner display
+    const cleanedDescription = locationDescription
+      .replace(/\([^)]*\)/g, '')
+      .replace(/\s+,/g, ',')
+      .replace(/,\s+/g, ', ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    html += `
+    <div class="popup-section locations-section">
+      <div class="popup-label" style="margin-bottom: 4px;">Locations:</div>
+      <div class="location-text">${cleanedDescription}</div>
+    </div>
+    `;
+  }
+  
+  return html;
 }
 
 // Attach events to each feature
@@ -150,6 +190,10 @@ fetch('/Observatory/data/gibraltar.geojson')
     
     // Fit map to show all features
     map.fitBounds(geojsonLayer.getBounds());
+    
+    // Store the data and populate table
+    geoJsonData = transformedData;
+    populateTable();
   })
   .catch(error => {
     console.error('Error loading GeoJSON:', error);
@@ -175,4 +219,143 @@ legend.onAdd = function (map) {
   return div;
 };
 
+
+// Parse location description to separate main locations from parenthetical content
+function parseLocations(description) {
+  const parts = [];
+  let current = '';
+  let inParens = false;
+  let parenContent = '';
+  
+  for (let i = 0; i < description.length; i++) {
+    const char = description[i];
+    
+    if (char === '(') {
+      inParens = true;
+      parenContent = '';
+    } else if (char === ')') {
+      inParens = false;
+      // Add the accumulated text before parentheses with tooltip
+      if (current.trim()) {
+        parts.push({ text: current.trim(), tooltip: parenContent.trim() });
+        current = '';
+      }
+    } else if (char === ',' && !inParens) {
+      if (current.trim()) {
+        parts.push({ text: current.trim(), tooltip: null });
+        current = '';
+      }
+    } else {
+      if (inParens) {
+        parenContent += char;
+      } else {
+        current += char;
+      }
+    }
+  }
+  
+  // Add any remaining text
+  if (current.trim()) {
+    parts.push({ text: current.trim().replace(/\.$/, ''), tooltip: null });
+  }
+  
+  return parts;
+}
+
+// Populate the enumeration areas table
+function populateTable() {
+  const tableBody = document.getElementById('ea-table-body');
+  if (!geoJsonData || Object.keys(enumerationLocations).length === 0) {
+    setTimeout(populateTable, 100);
+    return;
+  }
+  
+  tableBody.innerHTML = '';
+  
+  // Get all EA numbers and sort them
+  const eaNumbers = geoJsonData.features
+    .map(f => parseInt(f.properties.name.replace('EA ', '')))
+    .sort((a, b) => a - b);
+  
+  eaNumbers.forEach(num => {
+    const eaName = `EA ${num}`;
+    const locationInfo = enumerationLocations[eaName];
+    
+    if (!locationInfo) return;
+    
+    const row = document.createElement('tr');
+    
+    // EA Name cell (clickable)
+    const nameCell = document.createElement('td');
+    const nameLink = document.createElement('a');
+    nameLink.className = 'ea-name';
+    nameLink.href = '#';
+    nameLink.textContent = eaName;
+    nameLink.onclick = (e) => {
+      e.preventDefault();
+      showModal(eaName);
+    };
+    nameCell.appendChild(nameLink);
+    
+    // Locations cell with tooltips
+    const locCell = document.createElement('td');
+    const locations = parseLocations(locationInfo.description);
+    
+    locations.forEach((loc, idx) => {
+      if (loc.tooltip) {
+        const span = document.createElement('span');
+        span.className = 'location-item';
+        
+        const textSpan = document.createElement('span');
+        textSpan.className = 'location-tooltip';
+        textSpan.textContent = loc.text;
+        
+        const tooltipSpan = document.createElement('span');
+        tooltipSpan.className = 'tooltip-text';
+        tooltipSpan.textContent = loc.tooltip;
+        
+        span.appendChild(textSpan);
+        span.appendChild(tooltipSpan);
+        locCell.appendChild(span);
+      } else {
+        locCell.appendChild(document.createTextNode(loc.text));
+      }
+      
+      if (idx < locations.length - 1) {
+        locCell.appendChild(document.createTextNode(', '));
+      }
+    });
+    
+    row.appendChild(nameCell);
+    row.appendChild(locCell);
+    tableBody.appendChild(row);
+  });
+}
+
+// Show modal with EA details
+function showModal(eaName) {
+  const feature = geoJsonData.features.find(f => f.properties.name === eaName);
+  if (!feature) return;
+  
+  const modal = document.getElementById('ea-modal');
+  const modalBody = document.getElementById('modal-body');
+  
+  // Reuse the createPopupContent function
+  modalBody.innerHTML = createPopupContent(feature.properties);
+  modal.style.display = 'block';
+}
+
+// Close modal
+const modal = document.getElementById('ea-modal');
+const closeBtn = document.getElementsByClassName('close')[0];
+
+closeBtn.onclick = function() {
+  modal.style.display = 'none';
+}
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = 'none';
+  }
+}
 legend.addTo(map);
