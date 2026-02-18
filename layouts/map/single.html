@@ -1,0 +1,113 @@
+{{ define "header" }}
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""/>
+    
+    <style>
+      #map {
+        height: 600px;
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      
+      .info-box {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+      
+      .legend {
+        background: white;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        line-height: 24px;
+        color: #555;
+      }
+      
+      .legend i {
+        width: 18px;
+        height: 18px;
+        float: left;
+        margin-right: 8px;
+        opacity: 0.7;
+      }
+      
+      .leaflet-popup-content {
+        margin: 13px 19px;
+        line-height: 1.6;
+      }
+      
+      .popup-title {
+        font-weight: bold;
+        font-size: 1.1em;
+        margin-bottom: 8px;
+        color: #333;
+      }
+      
+      .popup-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+        border-bottom: 1px solid #eee;
+      }
+      
+      .popup-row:last-child {
+        border-bottom: none;
+      }
+      
+      .popup-label {
+        font-weight: 600;
+        color: #666;
+      }
+      
+      .popup-value {
+        color: #333;
+      }
+      
+      .loading {
+        text-align: center;
+        padding: 2rem;
+        color: #666;
+      }
+    </style>
+{{ end }}
+
+{{ define "main" }}
+    <div class="cf ph3 ph5-l pv4">
+      <div class="mw8 center">
+        <article class="cf">
+          <header class="tc pb4">
+            <h1 class="f2 f1-l fw2 dark-gray mt0 mb3">{{ .Title }}</h1>
+            <time class="f6 db grey">{{ .Date.Format "January 2, 2006" }}</time>
+          </header>
+          
+          <div class="info-box">
+            <p class="lh-copy measure-wide center">{{ .Content }}</p>
+          </div>
+          
+          <div id="map-container">
+            <div id="map"></div>
+          </div>
+          
+          <div class="mt4 f6 gray lh-copy">
+            <p>Data source: <a href="https://www.citypopulation.de/en/gibraltar/admin/" target="_blank" class="link blue hover-dark-blue">City Population - Gibraltar</a></p>
+            <p>Map powered by <a href="https://leafletjs.com/" target="_blank" class="link blue hover-dark-blue">Leaflet</a></p>
+          </div>
+        </article>
+      </div>
+    </main>
+    div>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""></script>
+    
+    <!-- Map initialization script -->
+    <script src="{{ .Site.BaseURL }}js/gibraltar-map.js"></script>
+{{ end }}

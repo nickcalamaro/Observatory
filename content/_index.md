@@ -4,4 +4,4 @@ title: "The Observatory"
 
 # Welcome to The Observatory
 
-Gibraltar's first data visualisation and analytics platform.
+Data visualization and analytics platform.

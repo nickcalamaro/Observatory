@@ -17,9 +17,13 @@ title = 'The Observatory'
     url = "/newsletter/"
     weight = 2
   [[menu.main]]
+    name = "Population Map"
+    url = "/map/"
+    weight = 3
+  [[menu.main]]
     name = "Chart Admin"
     url = "/admin/charts/"
-    weight = 3
+    weight = 4
 
 [module]
 [[module.imports]]
