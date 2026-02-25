@@ -232,6 +232,43 @@
       .close:focus {
         color: #000;
       }
+      
+      /* Toggle switch */
+      .view-toggle {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: #f9f9f9;
+        border-radius: 8px;
+      }
+      
+      .toggle-label {
+        font-weight: 600;
+        margin-right: 1rem;
+        color: #555;
+      }
+      
+      .toggle-btn {
+        padding: 8px 20px;
+        margin: 0 5px;
+        border: 2px solid #ddd;
+        background: white;
+        cursor: pointer;
+        border-radius: 4px;
+        font-weight: 500;
+        transition: all 0.3s;
+      }
+      
+      .toggle-btn:hover {
+        border-color: #3498db;
+        background: #f0f8ff;
+      }
+      
+      .toggle-btn.active {
+        background: #3498db;
+        color: white;
+        border-color: #3498db;
+      }
     </style>
 {{ end }}
 
@@ -254,16 +291,19 @@
           
           <!-- Enumeration Areas Table -->
           <div class="ea-table-container">
-            <h2 class="f3 fw6 mb3">Enumeration Areas</h2>
+            <h2 class="f3 fw6 mb3" id="table-title">Enumeration Areas</h2>
             <table class="ea-table">
               <thead>
                 <tr>
-                  <th style="width: 15%;">Area</th>
-                  <th style="width: 85%;">Locations</th>
+                  <th style="width: 15%;" id="table-header-area">Area</th>
+                  <th style="width: 85%;" id="table-header-locations">Locations</th>
                 </tr>
               </thead>
               <tbody id="ea-table-body">
                 <tr><td colspan="2" class="loading">Loading enumeration areas...</td></tr>
+              </tbody>
+            </table>
+          </div>
               </tbody>
             </table>
           </div>
@@ -293,6 +333,9 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
       crossorigin=""></script>
+    
+    <!-- Turf.js for geometry operations -->
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
     
     <!-- Map initialization script -->
     <script src="{{ .Site.BaseURL }}js/gibraltar-map.js"></script>

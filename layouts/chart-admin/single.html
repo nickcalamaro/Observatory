@@ -42,13 +42,6 @@
                 <label for="chart-description">Description</label>
                 <input type="text" id="chart-description" placeholder="Chart description">
             </div>
-            
-            <div class="examples">
-                <strong>Load Example:</strong><br>
-                <button class="example-btn" onclick="loadExample('gradient-area')">Gradient Area</button>
-                <button class="example-btn" onclick="loadExample('bar')">Bar Chart</button>
-                <button class="example-btn" onclick="loadExample('pie')">Pie Chart</button>
-            </div>
         </div>
         
         <div>
@@ -109,23 +102,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('chart-preview');
     chartInstance = echarts.init(container);
     
-    // Load default example
-    loadExample('gradient-area');
+    // Load chart types which will automatically load first template
+    loadChartTypes();
+    
+    // Load template when chart type changes
+    document.getElementById('chart-type').addEventListener('change', async function(e) {
+        const chartType = e.target.value;
+        await loadTemplate(chartType);
+        if (chartType) {
+            showAlert(`Loaded ${chartType} template`, 'success');
+        }
+    });
 });
-
-
-function loadExample(exampleName) {
-    const config = examples[exampleName];
-    if (!config) return;
-    
-    document.getElementById('chart-config').value = JSON.stringify(config, null, 2);
-    generateFormFields(config); // Regenerate form fields
-    chartInstance.setOption(config, true);
-    
-    if (config.title && config.title.text) {
-        document.getElementById('chart-title').value = config.title.text;
-    }
-}
 
 function validateJSON() {
     const configText = document.getElementById('chart-config').value;
@@ -338,18 +326,6 @@ async function loadTemplate(chartType) {
         console.error('Error loading template:', e);
     }
 }
-
-// Load template when chart type changes
-document.getElementById('chart-type').addEventListener('change', async function(e) {
-    const chartType = e.target.value;
-    await loadTemplate(chartType);
-    if (chartType) {
-        showAlert(`Loaded ${chartType} template`, 'success');
-    }
-});
-
-// Load chart types on page load
-loadChartTypes();
 
 // Tab switching
 function switchTab(tabName) {
