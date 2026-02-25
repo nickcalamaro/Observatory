@@ -33,13 +33,33 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HUGO_VERSION: 0.146.4
+      DART_SASS_VERSION: 1.83.4
     steps:
+      - name: Cache Hugo installer
+        id: cache-hugo
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/hugo.deb
+          key: hugo-${{ env.HUGO_VERSION }}
+      - name: Download Hugo CLI
+        if: steps.cache-hugo.outputs.cache-hit != 'true'
+        run: wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb
       - name: Install Hugo CLI
+        run: sudo dpkg -i ${{ runner.temp }}/hugo.deb
+      - name: Cache Dart Sass
+        id: cache-dart-sass
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/dart-sass
+          key: dart-sass-${{ env.DART_SASS_VERSION }}
+      - name: Download Dart Sass
+        if: steps.cache-dart-sass.outputs.cache-hit != 'true'
         run: |
-          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
-          && sudo dpkg -i ${{ runner.temp }}/hugo.deb          
-      - name: Install Dart Sass
-        run: sudo snap install dart-sass
+          wget -O ${{ runner.temp }}/dart-sass.tar.gz \
+            https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz
+          tar -xzf ${{ runner.temp }}/dart-sass.tar.gz -C ${{ runner.temp }}
+      - name: Add Dart Sass to PATH
+        run: echo "${{ runner.temp }}/dart-sass" >> $GITHUB_PATH
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -48,6 +68,12 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
+      - name: Cache Hugo modules
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/hugo_cache
+          key: hugo-modules-${{ hashFiles('go.sum') }}
+          restore-keys: hugo-modules-
       - name: Install Node.js dependencies
         run: "[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
       - name: Build with Hugo
@@ -59,7 +85,7 @@ jobs:
           hugo \
             --gc \
             --minify \
-            --baseURL "${{ steps.pages.outputs.base_url }}/"          
+            --baseURL "${{ steps.pages.outputs.base_url }}/"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
