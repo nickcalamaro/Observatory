@@ -21,9 +21,13 @@ title = 'The Observatory'
     url = "/map/"
     weight = 3
   [[menu.main]]
+    name = "Housing Stats"
+    url = "/housing/"
+    weight = 4
+  [[menu.main]]
     name = "Chart Admin"
     url = "/admin/charts/"
-    weight = 4
+    weight = 5
 
 [module]
 [[module.imports]]

@@ -1,0 +1,76 @@
+{
+  "districts": {
+    "East Side": {
+      "Government rented": { "Number of Households": 42, "Number of Persons": 94, "Number of Cars or Vans": 49, "Number of Motorcycles": 31, "Garages/Parking Spaces": 14 },
+      "Private rented": { "Number of Households": 28, "Number of Persons": 57, "Number of Cars or Vans": 23, "Number of Motorcycles": 9, "Garages/Parking Spaces": 6 },
+      "Employer rented": { "Number of Households": 0, "Number of Persons": 0, "Number of Cars or Vans": 0, "Number of Motorcycles": 0, "Garages/Parking Spaces": 0 },
+      "Owns outright": { "Number of Households": 104, "Number of Persons": 224, "Number of Cars or Vans": 119, "Number of Motorcycles": 78, "Garages/Parking Spaces": 68 },
+      "Owns with a mortgage": { "Number of Households": 34, "Number of Persons": 112, "Number of Cars or Vans": 47, "Number of Motorcycles": 40, "Garages/Parking Spaces": 27 },
+      "Co-ownership": { "Number of Households": 0, "Number of Persons": 0, "Number of Cars or Vans": 0, "Number of Motorcycles": 0, "Garages/Parking Spaces": 0 },
+      "Rent free": { "Number of Households": 3, "Number of Persons": 6, "Number of Cars or Vans": 3, "Number of Motorcycles": 3, "Garages/Parking Spaces": 2 },
+      "Other": { "Number of Households": 2, "Number of Persons": 4, "Number of Cars or Vans": 1, "Number of Motorcycles": 0, "Garages/Parking Spaces": 0 }
+    },
+    "North District": {
+      "Government rented": { "Number of Households": 1255, "Number of Persons": 3240, "Number of Cars or Vans": 1155, "Number of Motorcycles": 756, "Garages/Parking Spaces": 356 },
+      "Private rented": { "Number of Households": 386, "Number of Persons": 855, "Number of Cars or Vans": 230, "Number of Motorcycles": 64, "Garages/Parking Spaces": 213 },
+      "Employer rented": { "Number of Households": 17, "Number of Persons": 39, "Number of Cars or Vans": 10, "Number of Motorcycles": 1, "Garages/Parking Spaces": 9 },
+      "Owns outright": { "Number of Households": 346, "Number of Persons": 774, "Number of Cars or Vans": 393, "Number of Motorcycles": 147, "Garages/Parking Spaces": 346 },
+      "Owns with a mortgage": { "Number of Households": 187, "Number of Persons": 514, "Number of Cars or Vans": 219, "Number of Motorcycles": 90, "Garages/Parking Spaces": 199 },
+      "Co-ownership": { "Number of Households": 462, "Number of Persons": 1082, "Number of Cars or Vans": 473, "Number of Motorcycles": 378, "Garages/Parking Spaces": 481 },
+      "Rent free": { "Number of Households": 16, "Number of Persons": 32, "Number of Cars or Vans": 16, "Number of Motorcycles": 2, "Garages/Parking Spaces": 17 },
+      "Other": { "Number of Households": 8, "Number of Persons": 21, "Number of Cars or Vans": 8, "Number of Motorcycles": 4, "Garages/Parking Spaces": 2 }
+    },
+    "Reclamation Areas": {
+      "Government rented": { "Number of Households": 1732, "Number of Persons": 3847, "Number of Cars or Vans": 1475, "Number of Motorcycles": 945, "Garages/Parking Spaces": 1179 },
+      "Private rented": { "Number of Households": 397, "Number of Persons": 926, "Number of Cars or Vans": 303, "Number of Motorcycles": 93, "Garages/Parking Spaces": 287 },
+      "Employer rented": { "Number of Households": 17, "Number of Persons": 46, "Number of Cars or Vans": 11, "Number of Motorcycles": 4, "Garages/Parking Spaces": 12 },
+      "Owns outright": { "Number of Households": 1496, "Number of Persons": 3509, "Number of Cars or Vans": 1824, "Number of Motorcycles": 913, "Garages/Parking Spaces": 1926 },
+      "Owns with a mortgage": { "Number of Households": 1073, "Number of Persons": 3434, "Number of Cars or Vans": 1379, "Number of Motorcycles": 976, "Garages/Parking Spaces": 1347 },
+      "Co-ownership": { "Number of Households": 1049, "Number of Persons": 2939, "Number of Cars or Vans": 1290, "Number of Motorcycles": 989, "Garages/Parking Spaces": 1252 },
+      "Rent free": { "Number of Households": 42, "Number of Persons": 78, "Number of Cars or Vans": 38, "Number of Motorcycles": 9, "Garages/Parking Spaces": 37 },
+      "Other": { "Number of Households": 55, "Number of Persons": 116, "Number of Cars or Vans": 42, "Number of Motorcycles": 32, "Garages/Parking Spaces": 48 },
+      "Boats": { "Number of Households": 35, "Number of Persons": 70, "Number of Cars or Vans": 21, "Number of Motorcycles": 13, "Garages/Parking Spaces": 14 }
+    },
+    "Town Area": {
+      "Government rented": { "Number of Households": 103, "Number of Persons": 254, "Number of Cars or Vans": 93, "Number of Motorcycles": 58, "Garages/Parking Spaces": 36 },
+      "Private rented": { "Number of Households": 839, "Number of Persons": 1999, "Number of Cars or Vans": 584, "Number of Motorcycles": 235, "Garages/Parking Spaces": 266 },
+      "Employer rented": { "Number of Households": 30, "Number of Persons": 80, "Number of Cars or Vans": 15, "Number of Motorcycles": 4, "Garages/Parking Spaces": 5 },
+      "Owns outright": { "Number of Households": 366, "Number of Persons": 855, "Number of Cars or Vans": 400, "Number of Motorcycles": 144, "Garages/Parking Spaces": 331 },
+      "Owns with a mortgage": { "Number of Households": 147, "Number of Persons": 500, "Number of Cars or Vans": 186, "Number of Motorcycles": 86, "Garages/Parking Spaces": 126 },
+      "Co-ownership": { "Number of Households": 0, "Number of Persons": 0, "Number of Cars or Vans": 0, "Number of Motorcycles": 0, "Garages/Parking Spaces": 0 },
+      "Rent free": { "Number of Households": 24, "Number of Persons": 60, "Number of Cars or Vans": 16, "Number of Motorcycles": 3, "Garages/Parking Spaces": 13 },
+      "Other": { "Number of Households": 14, "Number of Persons": 35, "Number of Cars or Vans": 15, "Number of Motorcycles": 12, "Garages/Parking Spaces": 12 }
+    },
+    "Upper Town": {
+      "Government rented": { "Number of Households": 586, "Number of Persons": 1651, "Number of Cars or Vans": 624, "Number of Motorcycles": 473, "Garages/Parking Spaces": 298 },
+      "Private rented": { "Number of Households": 155, "Number of Persons": 372, "Number of Cars or Vans": 108, "Number of Motorcycles": 49, "Garages/Parking Spaces": 60 },
+      "Employer rented": { "Number of Households": 3, "Number of Persons": 7, "Number of Cars or Vans": 1, "Number of Motorcycles": 1, "Garages/Parking Spaces": 1 },
+      "Owns outright": { "Number of Households": 146, "Number of Persons": 339, "Number of Cars or Vans": 179, "Number of Motorcycles": 89, "Garages/Parking Spaces": 130 },
+      "Owns with a mortgage": { "Number of Households": 138, "Number of Persons": 461, "Number of Cars or Vans": 177, "Number of Motorcycles": 117, "Garages/Parking Spaces": 148 },
+      "Co-ownership": { "Number of Households": 0, "Number of Persons": 0, "Number of Cars or Vans": 0, "Number of Motorcycles": 0, "Garages/Parking Spaces": 0 },
+      "Rent free": { "Number of Households": 9, "Number of Persons": 18, "Number of Cars or Vans": 7, "Number of Motorcycles": 2, "Garages/Parking Spaces": 4 },
+      "Other": { "Number of Households": 3, "Number of Persons": 12, "Number of Cars or Vans": 3, "Number of Motorcycles": 3, "Garages/Parking Spaces": 1 }
+    },
+    "Sandpits Area": {
+      "Government rented": { "Number of Households": 573, "Number of Persons": 1330, "Number of Cars or Vans": 582, "Number of Motorcycles": 375, "Garages/Parking Spaces": 176 },
+      "Private rented": { "Number of Households": 20, "Number of Persons": 49, "Number of Cars or Vans": 15, "Number of Motorcycles": 5, "Garages/Parking Spaces": 16 },
+      "Employer rented": { "Number of Households": 3, "Number of Persons": 8, "Number of Cars or Vans": 3, "Number of Motorcycles": 0, "Garages/Parking Spaces": 2 },
+      "Owns outright": { "Number of Households": 198, "Number of Persons": 448, "Number of Cars or Vans": 267, "Number of Motorcycles": 87, "Garages/Parking Spaces": 221 },
+      "Owns with a mortgage": { "Number of Households": 77, "Number of Persons": 244, "Number of Cars or Vans": 116, "Number of Motorcycles": 89, "Garages/Parking Spaces": 104 },
+      "Co-ownership": { "Number of Households": 0, "Number of Persons": 0, "Number of Cars or Vans": 0, "Number of Motorcycles": 0, "Garages/Parking Spaces": 0 },
+      "Rent free": { "Number of Households": 3, "Number of Persons": 5, "Number of Cars or Vans": 4, "Number of Motorcycles": 2, "Garages/Parking Spaces": 2 },
+      "Other": { "Number of Households": 4, "Number of Persons": 13, "Number of Cars or Vans": 7, "Number of Motorcycles": 4, "Garages/Parking Spaces": 5 }
+    },
+    "South District": {
+      "Government rented": { "Number of Households": 507, "Number of Persons": 1423, "Number of Cars or Vans": 588, "Number of Motorcycles": 440, "Garages/Parking Spaces": 231 },
+      "Private rented": { "Number of Households": 166, "Number of Persons": 425, "Number of Cars or Vans": 189, "Number of Motorcycles": 100, "Garages/Parking Spaces": 87 },
+      "Employer rented": { "Number of Households": 8, "Number of Persons": 22, "Number of Cars or Vans": 9, "Number of Motorcycles": 2, "Garages/Parking Spaces": 6 },
+      "Owns outright": { "Number of Households": 751, "Number of Persons": 1886, "Number of Cars or Vans": 1127, "Number of Motorcycles": 585, "Garages/Parking Spaces": 883 },
+      "Owns with a mortgage": { "Number of Households": 724, "Number of Persons": 2448, "Number of Cars or Vans": 1060, "Number of Motorcycles": 815, "Garages/Parking Spaces": 833 },
+      "Co-ownership": { "Number of Households": 116, "Number of Persons": 340, "Number of Cars or Vans": 144, "Number of Motorcycles": 131, "Garages/Parking Spaces": 123 },
+      "Rent free": { "Number of Households": 21, "Number of Persons": 48, "Number of Cars or Vans": 26, "Number of Motorcycles": 15, "Garages/Parking Spaces": 10 },
+      "Other": { "Number of Households": 10, "Number of Persons": 33, "Number of Cars or Vans": 22, "Number of Motorcycles": 14, "Garages/Parking Spaces": 12 },
+      "Institutions": { "Number of Households": 0, "Number of Persons": 552, "Number of Cars or Vans": 51, "Number of Motorcycles": 20, "Garages/Parking Spaces": 8 }
+    }
+  }
+}

@@ -1,0 +1,472 @@
+{{ define "header" }}
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""/>
+
+    <style>
+      /* ===== Map ===== */
+      #housing-map {
+        height: 600px;
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      /* ===== Info Box ===== */
+      .info-box {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      /* ===== Controls ===== */
+      .controls-bar {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        padding: 1.25rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e1e8ed;
+        flex-wrap: wrap;
+      }
+
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .control-group label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #555;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .control-group select {
+        padding: 0.6rem 0.75rem;
+        border: 2px solid #e1e8ed;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        background: white;
+        cursor: pointer;
+        transition: border-color 0.2s;
+      }
+
+      .control-group select:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+      }
+
+      /* ===== Summary Stat ===== */
+      .summary-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #667eea15, #764ba215);
+        border: 1px solid #667eea30;
+        border-radius: 8px;
+        font-size: 1rem;
+        color: #333;
+      }
+
+      .summary-bar strong {
+        font-size: 1.25rem;
+        color: #2c3e50;
+      }
+
+      /* ===== Leaflet Info Control (hover) ===== */
+      .housing-info {
+        padding: 8px 12px;
+        background: white;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        line-height: 1.6;
+        color: #555;
+        min-width: 180px;
+      }
+
+      .housing-info h4 {
+        margin: 0 0 6px 0;
+        color: #333;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .housing-info .district-name {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #2c3e50;
+      }
+
+      .housing-info .district-value {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #333;
+      }
+
+      .housing-info .district-share {
+        font-size: 0.85rem;
+        color: #888;
+      }
+
+      /* ===== Legend ===== */
+      .housing-legend {
+        background: white;
+        padding: 10px 14px;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        line-height: 22px;
+        color: #555;
+        font-size: 0.85rem;
+      }
+
+      .housing-legend strong {
+        display: block;
+        margin-bottom: 6px;
+        color: #333;
+      }
+
+      .housing-legend i {
+        width: 18px;
+        height: 14px;
+        float: left;
+        margin-right: 8px;
+        border-radius: 2px;
+        opacity: 0.85;
+      }
+
+      /* ===== Popup ===== */
+      .leaflet-popup-content {
+        margin: 12px 16px;
+        line-height: 1.5;
+        max-width: 320px;
+      }
+
+      .popup-title {
+        font-weight: 700;
+        font-size: 1.1em;
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #e0e0e0;
+        color: #2c3e50;
+      }
+
+      .popup-main-value {
+        font-size: 1.6em;
+        font-weight: 700;
+        color: #333;
+        margin: 6px 0;
+      }
+
+      .popup-main-label {
+        font-size: 0.85em;
+        color: #888;
+        margin-bottom: 10px;
+      }
+
+      .popup-breakdown {
+        border-top: 1px solid #eee;
+        padding-top: 8px;
+        margin-top: 4px;
+      }
+
+      .popup-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 3px 0;
+        font-size: 0.9em;
+      }
+
+      .popup-row.highlighted {
+        background: #fff8e1;
+        margin: 0 -6px;
+        padding: 3px 6px;
+        border-radius: 3px;
+        font-weight: 600;
+      }
+
+      .popup-row .tenure-name {
+        color: #555;
+        max-width: 180px;
+      }
+
+      .popup-row .tenure-value {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .popup-total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0 0;
+        margin-top: 4px;
+        border-top: 1px solid #ddd;
+        font-weight: 700;
+        font-size: 0.9em;
+        color: #2c3e50;
+      }
+
+      /* ===== Data Table ===== */
+      .housing-table-container {
+        margin-top: 2.5rem;
+        border-top: 2px solid #e0e0e0;
+        padding-top: 2rem;
+      }
+
+      .housing-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95em;
+      }
+
+      .housing-table th {
+        background: #f5f5f5;
+        padding: 10px 12px;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid #ddd;
+        color: #555;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+
+      .housing-table th.numeric {
+        text-align: right;
+      }
+
+      .housing-table td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .housing-table td.numeric {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .housing-table tbody tr {
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+
+      .housing-table tbody tr:hover {
+        background: #f0f8ff;
+      }
+
+      .housing-table tfoot td {
+        font-weight: 700;
+        border-top: 2px solid #ddd;
+        background: #fafafa;
+        color: #2c3e50;
+      }
+
+      .color-swatch {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        vertical-align: middle;
+        margin-right: 8px;
+        border: 1px solid rgba(0,0,0,0.1);
+      }
+
+      .rank-cell {
+        color: #aaa;
+        font-weight: 600;
+        width: 40px;
+      }
+
+      .bar-cell {
+        width: 30%;
+      }
+
+      .bar-wrapper {
+        background: #f0f0f0;
+        border-radius: 4px;
+        overflow: hidden;
+        height: 20px;
+      }
+
+      .bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.4s ease;
+        min-width: 2px;
+      }
+
+      .share-cell {
+        color: #888;
+        font-size: 0.9em;
+      }
+
+      /* ===== Footer ===== */
+      .data-source {
+        margin-top: 2rem;
+        font-size: 0.85rem;
+        color: #888;
+        line-height: 1.6;
+      }
+
+      .data-source a {
+        color: #3498db;
+      }
+
+      .data-source a:hover {
+        color: #2980b9;
+      }
+
+      /* ===== Responsive ===== */
+      @media (max-width: 768px) {
+        .controls-bar {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .control-group {
+          min-width: 100%;
+        }
+
+        #housing-map {
+          height: 400px;
+        }
+
+        .housing-table {
+          font-size: 0.85em;
+        }
+
+        .bar-cell {
+          display: none;
+        }
+      }
+    </style>
+{{ end }}
+
+{{ define "main" }}
+    <div class="cf ph3 ph5-l pv4">
+      <div class="mw9 center">
+        <article class="cf">
+          <header class="tc pb4">
+            <h1 class="f2 f1-l fw2 dark-gray mt0 mb3">{{ .Title }}</h1>
+            <time class="f6 db grey">{{ .Date.Format "January 2, 2006" }}</time>
+          </header>
+
+          <div class="info-box">
+            <p class="lh-copy measure-wide center">{{ .Content }}</p>
+          </div>
+
+          <!-- Controls -->
+          <div class="controls-bar">
+            <div class="control-group">
+              <label for="attribute-select">Showing</label>
+              <select id="attribute-select">
+                <option value="Number of Households">Number of Households</option>
+                <option value="Number of Persons" selected>Number of Persons</option>
+                <option value="Number of Cars or Vans">Number of Cars or Vans</option>
+                <option value="Number of Motorcycles">Number of Motorcycles</option>
+                <option value="Garages/Parking Spaces">Garages / Parking Spaces</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label for="tenure-select">Property type</label>
+              <select id="tenure-select">
+                <option value="All">All property types</option>
+                <optgroup label="Summary">
+                  <option value="All rented">All rented</option>
+                  <option value="All owned">All owned</option>
+                </optgroup>
+                <optgroup label="Rented">
+                  <option value="Government rented">Government rented</option>
+                  <option value="Private rented">Private rented</option>
+                  <option value="Employer rented">Employer rented</option>
+                </optgroup>
+                <optgroup label="Owned">
+                  <option value="Owns outright">Owns outright</option>
+                  <option value="Owns with a mortgage">Owns with a mortgage</option>
+                  <option value="Co-ownership">Co-ownership</option>
+                </optgroup>
+                <optgroup label="Other">
+                  <option value="Rent free">Rent free</option>
+                  <option value="Other">Other</option>
+                  <option value="Boats">Boats (Reclamation only)</option>
+                  <option value="Institutions">Institutions (South only)</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
+          <!-- Summary -->
+          <div class="summary-bar">
+            <span>Gibraltar total:</span>
+            <strong id="summary-value">—</strong>
+            <span id="summary-label"></span>
+          </div>
+
+          <!-- Map -->
+          <div id="housing-map"></div>
+
+          <!-- Data Table -->
+          <div class="housing-table-container">
+            <h2 class="f3 fw6 mb3" id="table-heading">District Breakdown</h2>
+            <table class="housing-table">
+              <thead>
+                <tr>
+                  <th class="rank-cell">#</th>
+                  <th>District</th>
+                  <th class="numeric" id="th-value">Value</th>
+                  <th class="bar-cell"></th>
+                  <th class="numeric">Share</th>
+                </tr>
+              </thead>
+              <tbody id="housing-table-body">
+                <tr><td colspan="5" style="text-align:center; color:#999; padding:2rem;">Loading data…</td></tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td></td>
+                  <td>Total</td>
+                  <td class="numeric" id="table-total">—</td>
+                  <td class="bar-cell"></td>
+                  <td class="numeric">100%</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="data-source">
+            <p>Data source: Gibraltar Census — Major Residential Area statistics by housing tenure</p>
+            <p>Map powered by <a href="https://leafletjs.com/" target="_blank">Leaflet</a> · Geometry operations by <a href="https://turfjs.org/" target="_blank">Turf.js</a></p>
+          </div>
+        </article>
+      </div>
+    </div>
+{{ end }}
+
+{{ define "footer" }}
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""></script>
+
+    <!-- Turf.js for geometry merging -->
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
+    <!-- Pass Hugo base URL to JS -->
+    <script>const SITE_BASE_URL = '{{ .Site.BaseURL }}';</script>
+
+    <!-- Housing map script -->
+    <script src="{{ .Site.BaseURL }}js/housing-map.js"></script>
+{{ end }}
