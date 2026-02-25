@@ -1,0 +1,623 @@
+{{ define "header" }}
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""/>
+
+    <style>
+      /* ===== Map ===== */
+      #property-map {
+        height: 600px;
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .info-box {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      /* ===== Controls ===== */
+      .controls-bar {
+        display: flex;
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+        padding: 1.25rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e1e8ed;
+        flex-wrap: wrap;
+      }
+
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        flex: 1;
+        min-width: 170px;
+      }
+
+      .control-group label {
+        font-weight: 600;
+        font-size: 0.82rem;
+        color: #555;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .control-group select {
+        padding: 0.6rem 0.75rem;
+        border: 2px solid #e1e8ed;
+        border-radius: 6px;
+        font-size: 0.92rem;
+        background: white;
+        cursor: pointer;
+        transition: border-color 0.2s;
+      }
+
+      .control-group select:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+      }
+
+      .control-group select:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* ===== Summary ===== */
+      .summary-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #667eea15, #764ba215);
+        border: 1px solid #667eea30;
+        border-radius: 8px;
+        font-size: 1rem;
+        color: #333;
+        flex-wrap: wrap;
+        text-align: center;
+      }
+
+      .summary-bar strong {
+        font-size: 1.25rem;
+        color: #2c3e50;
+      }
+
+      /* ===== Leaflet Info Control ===== */
+      .prop-info {
+        padding: 8px 12px;
+        background: white;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        line-height: 1.6;
+        color: #555;
+        min-width: 180px;
+      }
+
+      .prop-info h4 {
+        margin: 0 0 6px;
+        color: #333;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .prop-info .district-name { font-weight: 700; font-size: 1.05rem; color: #2c3e50; }
+      .prop-info .district-value { font-size: 1.4rem; font-weight: 700; color: #333; }
+      .prop-info .district-sub { font-size: 0.85rem; color: #888; }
+
+      /* ===== Legend ===== */
+      .prop-legend {
+        background: white;
+        padding: 10px 14px;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        line-height: 22px;
+        color: #555;
+        font-size: 0.85rem;
+      }
+
+      .prop-legend strong { display: block; margin-bottom: 6px; color: #333; }
+      .prop-legend i {
+        width: 18px; height: 14px; float: left;
+        margin-right: 8px; border-radius: 2px; opacity: 0.85;
+      }
+
+      /* ===== Popup ===== */
+      .leaflet-popup-content {
+        margin: 12px 16px;
+        line-height: 1.5;
+        max-width: 340px;
+      }
+
+      .popup-title {
+        font-weight: 700; font-size: 1.1em;
+        margin-bottom: 8px; padding-bottom: 8px;
+        border-bottom: 2px solid #e0e0e0; color: #2c3e50;
+      }
+
+      .popup-hero { font-size: 1.6em; font-weight: 700; color: #333; margin: 4px 0; }
+      .popup-label { font-size: 0.85em; color: #888; margin-bottom: 8px; }
+
+      .popup-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2px 12px;
+        font-size: 0.88em;
+        border-top: 1px solid #eee;
+        padding-top: 8px;
+        margin-top: 4px;
+      }
+
+      .popup-grid .pg-label { color: #777; }
+      .popup-grid .pg-value { text-align: right; font-weight: 600; color: #333; }
+      .popup-grid .pg-highlight { background: #fff8e1; margin: 0 -4px; padding: 1px 4px; border-radius: 3px; }
+
+      /* ===== Data Table ===== */
+      .property-table-container {
+        margin-top: 2.5rem;
+        border-top: 2px solid #e0e0e0;
+        padding-top: 2rem;
+      }
+
+      .property-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95em;
+      }
+
+      .property-table th {
+        background: #f5f5f5;
+        padding: 10px 12px;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid #ddd;
+        color: #555;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+
+      .property-table th.numeric { text-align: right; }
+
+      .property-table td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .property-table td.numeric {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .property-table tbody tr { cursor: pointer; transition: background 0.15s; }
+      .property-table tbody tr:hover { background: #f0f8ff; }
+
+      .property-table tfoot td {
+        font-weight: 700; border-top: 2px solid #ddd;
+        background: #fafafa; color: #2c3e50;
+      }
+
+      .color-swatch {
+        display: inline-block; width: 14px; height: 14px;
+        border-radius: 3px; vertical-align: middle;
+        margin-right: 8px; border: 1px solid rgba(0,0,0,0.1);
+      }
+
+      .bar-cell { width: 25%; }
+
+      .bar-wrapper {
+        background: #f0f0f0;
+        border-radius: 4px;
+        overflow: hidden;
+        height: 20px;
+      }
+
+      .bar-fill {
+        height: 100%; border-radius: 4px;
+        transition: width 0.4s ease; min-width: 2px;
+      }
+
+      .share-cell { color: #888; font-size: 0.9em; }
+
+      /* ===== Charts Section ===== */
+      .charts-section {
+        margin-top: 3rem;
+        border-top: 2px solid #e0e0e0;
+        padding-top: 2rem;
+      }
+
+      .charts-section h2 {
+        font-size: 1.4rem;
+        color: #2c3e50;
+        margin: 0 0 1.5rem;
+        font-weight: 600;
+      }
+
+      .chart-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        border: 1px solid #e8e8e8;
+        padding: 1.25rem;
+        margin-bottom: 2rem;
+      }
+
+      .chart-card h3 {
+        font-size: 1.1rem;
+        color: #2c3e50;
+        margin: 0 0 0.75rem;
+        font-weight: 600;
+      }
+
+      .chart-card .chart-subtitle {
+        font-size: 0.85rem;
+        color: #888;
+        margin: -0.5rem 0 1rem;
+      }
+
+      .charts-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+
+      /* ===== House Visualisation ===== */
+      .house-viz-card {
+        background: linear-gradient(135deg, #fafbff 0%, #f5f0ff 100%);
+      }
+
+      .house-viz-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .house-viz-header .control-group { min-width: 180px; flex: 0; }
+
+      .house-viz-body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3rem;
+        flex-wrap: wrap;
+        padding: 1.5rem 0 0.5rem;
+      }
+
+      .house-svg-wrap {
+        width: 240px;
+        flex-shrink: 0;
+      }
+
+      .house-svg-wrap svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      #house-bands rect {
+        transition: opacity 0.25s, filter 0.25s;
+        cursor: pointer;
+      }
+
+      #house-bands rect:hover {
+        filter: brightness(1.12);
+      }
+
+      #house-bands rect.dimmed {
+        opacity: 0.25;
+      }
+
+      .house-legend {
+        flex: 1;
+        min-width: 240px;
+        max-width: 480px;
+      }
+
+      .house-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 0.6rem;
+        border-bottom: 1px solid #f0f0f0;
+        border-radius: 4px;
+        transition: background 0.15s;
+        cursor: default;
+      }
+
+      .house-legend-item:hover,
+      .house-legend-item.highlight {
+        background: #eef1ff;
+      }
+
+      .house-legend-swatch {
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        flex-shrink: 0;
+        border: 1px solid rgba(0,0,0,0.08);
+      }
+
+      .house-legend-label {
+        flex: 1;
+        font-size: 0.9rem;
+        color: #555;
+      }
+
+      .house-legend-count {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #333;
+        font-variant-numeric: tabular-nums;
+        min-width: 50px;
+        text-align: right;
+      }
+
+      .house-legend-pct {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #2c3e50;
+        min-width: 52px;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .house-legend-total {
+        border-top: 2px solid #ddd;
+        border-bottom: none;
+        padding-top: 0.75rem;
+        margin-top: 0.25rem;
+      }
+
+      /* ===== Footer ===== */
+      .data-source {
+        margin-top: 2rem;
+        font-size: 0.85rem;
+        color: #888;
+        line-height: 1.6;
+      }
+
+      .data-source a { color: #3498db; }
+      .data-source a:hover { color: #2980b9; }
+
+      /* ===== Responsive ===== */
+      @media (max-width: 900px) {
+        .controls-bar { flex-direction: column; gap: 1rem; }
+        .control-group { min-width: 100%; }
+        #property-map { height: 400px; }
+        .charts-grid { grid-template-columns: 1fr; }
+        .bar-cell { display: none; }
+        .house-viz-header { flex-direction: column; }
+        .house-viz-body { flex-direction: column; gap: 1.5rem; }
+        .house-svg-wrap { width: 200px; }
+        .house-legend { min-width: 100%; }
+      }
+    </style>
+{{ end }}
+
+{{ define "main" }}
+    <div class="cf ph3 ph5-l pv4">
+      <div class="mw9 center">
+        <article class="cf">
+          <header class="tc pb4">
+            <h1 class="f2 f1-l fw2 dark-gray mt0 mb3">{{ .Title }}</h1>
+            <time class="f6 db grey">{{ .Date.Format "January 2, 2006" }}</time>
+          </header>
+
+          <div class="info-box">
+            <p class="lh-copy measure-wide center">{{ .Content }}</p>
+          </div>
+
+          <!-- Controls -->
+          <div class="controls-bar">
+            <div class="control-group">
+              <label for="metric-select">Metric</label>
+              <select id="metric-select">
+                <optgroup label="Households">
+                  <option value="households" selected>Number of Households</option>
+                </optgroup>
+                <optgroup label="Property Prices">
+                  <option value="avg-price">Average Sale Price</option>
+                  <option value="min-price">Minimum Sale Price</option>
+                  <option value="max-price">Maximum Sale Price</option>
+                </optgroup>
+              </select>
+            </div>
+            <div class="control-group">
+              <label for="bed-select">Bedrooms</label>
+              <select id="bed-select">
+                <option value="all" selected>All</option>
+                <option value="0">Studio (0)</option>
+                <option value="1">1 Bedroom</option>
+                <option value="2">2 Bedrooms</option>
+                <option value="3">3 Bedrooms</option>
+                <option value="4">4 Bedrooms</option>
+                <option value="5">5 Bedrooms</option>
+                <option value="6+">6+ Bedrooms</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label for="tenure-select">Tenure</label>
+              <select id="tenure-select">
+                <option value="All" selected>All tenures</option>
+                <optgroup label="Summary">
+                  <option value="All rented">All rented</option>
+                  <option value="All owned">All owned</option>
+                </optgroup>
+                <optgroup label="Rented">
+                  <option value="Government rented">Government rented</option>
+                  <option value="Private rented">Private rented</option>
+                  <option value="Employer rented">Employer rented</option>
+                </optgroup>
+                <optgroup label="Owned">
+                  <option value="Owns outright">Owns outright</option>
+                  <option value="Owns with a mortgage">Owns with a mortgage</option>
+                  <option value="Co-ownership">Co-ownership</option>
+                </optgroup>
+                <optgroup label="Other">
+                  <option value="Rent free">Rent free</option>
+                  <option value="Other">Other</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
+          <!-- Summary -->
+          <div class="summary-bar">
+            <span>Gibraltar total:</span>
+            <strong id="summary-value">—</strong>
+            <span id="summary-label"></span>
+          </div>
+
+          <!-- Map -->
+          <div id="property-map"></div>
+
+          <!-- Data Table -->
+          <div class="property-table-container">
+            <h2 class="f3 fw6 mb3">District Breakdown</h2>
+            <table class="property-table">
+              <thead>
+                <tr>
+                  <th style="width:40px">#</th>
+                  <th>District</th>
+                  <th class="numeric" id="th-value">Value</th>
+                  <th class="bar-cell"></th>
+                  <th class="numeric">Share</th>
+                </tr>
+              </thead>
+              <tbody id="prop-table-body">
+                <tr><td colspan="5" style="text-align:center;color:#999;padding:2rem">Loading…</td></tr>
+              </tbody>
+              <tfoot id="prop-table-foot">
+                <tr>
+                  <td></td>
+                  <td>Total</td>
+                  <td class="numeric" id="table-total">—</td>
+                  <td class="bar-cell"></td>
+                  <td class="numeric">100%</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- Charts -->
+          <div class="charts-section">
+            <h2>Data Visualisations</h2>
+
+            <!-- House Tenure Visualisation -->
+            <div class="chart-card house-viz-card">
+              <div class="house-viz-header">
+                <div>
+                  <h3>Tenure at a Glance</h3>
+                  <p class="chart-subtitle">Each coloured band represents a tenure type — taller bands mean a larger share</p>
+                </div>
+                <div class="control-group">
+                  <label for="house-district-select">Area</label>
+                  <select id="house-district-select">
+                    <option value="All" selected>All of Gibraltar</option>
+                    <option value="East Side">East Side</option>
+                    <option value="North District">North District</option>
+                    <option value="Reclamation Areas">Reclamation Areas</option>
+                    <option value="Town Area">Town Area</option>
+                    <option value="Upper Town">Upper Town</option>
+                    <option value="Sandpits Area">Sandpits Area</option>
+                    <option value="South District">South District</option>
+                  </select>
+                </div>
+              </div>
+              <div class="house-viz-body">
+                <div class="house-svg-wrap">
+                  <svg viewBox="0 0 300 410" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <clipPath id="house-clip">
+                        <polygon points="150,15 295,145 295,395 5,395 5,145"/>
+                      </clipPath>
+                      <filter id="house-shadow">
+                        <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.12"/>
+                      </filter>
+                    </defs>
+                    <!-- Shadow background -->
+                    <polygon points="150,15 295,145 295,395 5,395 5,145" fill="#e8e8e8" filter="url(#house-shadow)"/>
+                    <!-- Coloured tenure bands -->
+                    <g id="house-bands" clip-path="url(#house-clip)"></g>
+                    <!-- House outline -->
+                    <polygon points="150,15 295,145 295,395 5,395 5,145" fill="none" stroke="#2c3e50" stroke-width="2.5" stroke-linejoin="round"/>
+                    <!-- Eave line -->
+                    <line x1="5" y1="145" x2="295" y2="145" stroke="#2c3e50" stroke-width="1" opacity="0.2"/>
+                    <!-- Door -->
+                    <rect x="125" y="310" width="50" height="85" rx="25" ry="25" fill="none" stroke="#2c3e50" stroke-width="1.5" opacity="0.18" pointer-events="none"/>
+                    <circle cx="168" cy="355" r="3" fill="#2c3e50" opacity="0.18" pointer-events="none"/>
+                    <!-- Left window -->
+                    <rect x="35" y="200" width="55" height="48" rx="3" fill="none" stroke="#2c3e50" stroke-width="1.5" opacity="0.18" pointer-events="none"/>
+                    <line x1="62.5" y1="200" x2="62.5" y2="248" stroke="#2c3e50" stroke-width="1" opacity="0.15" pointer-events="none"/>
+                    <line x1="35" y1="224" x2="90" y2="224" stroke="#2c3e50" stroke-width="1" opacity="0.15" pointer-events="none"/>
+                    <!-- Right window -->
+                    <rect x="210" y="200" width="55" height="48" rx="3" fill="none" stroke="#2c3e50" stroke-width="1.5" opacity="0.18" pointer-events="none"/>
+                    <line x1="237.5" y1="200" x2="237.5" y2="248" stroke="#2c3e50" stroke-width="1" opacity="0.15" pointer-events="none"/>
+                    <line x1="210" y1="224" x2="265" y2="224" stroke="#2c3e50" stroke-width="1" opacity="0.15" pointer-events="none"/>
+                  </svg>
+                </div>
+                <div id="house-legend" class="house-legend">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Price Chart (full width) -->
+            <div class="chart-card">
+              <h3>Average Property Sale Prices</h3>
+              <p class="chart-subtitle">By area and number of bedrooms — hover for min/max range</p>
+              <div id="price-chart" style="width:100%;height:420px;"></div>
+            </div>
+
+            <div class="charts-grid">
+              <!-- Bedroom Distribution -->
+              <div class="chart-card">
+                <h3>Bedroom Distribution</h3>
+                <p class="chart-subtitle">Number of households by bedroom count per district</p>
+                <div id="bedroom-chart" style="width:100%;height:420px;"></div>
+              </div>
+
+              <!-- Tenure Breakdown -->
+              <div class="chart-card">
+                <h3>Tenure Composition</h3>
+                <p class="chart-subtitle">Ownership vs rental proportions per district</p>
+                <div id="tenure-chart" style="width:100%;height:420px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="data-source">
+            <p>Data source: Gibraltar Census — bedroom &amp; tenure statistics by Major Residential Area; Property Gibraltar — sale price statistics</p>
+            <p>Map powered by <a href="https://leafletjs.com/" target="_blank">Leaflet</a> · Charts by <a href="https://echarts.apache.org/" target="_blank">Apache ECharts</a> · Geometry by <a href="https://turfjs.org/" target="_blank">Turf.js</a></p>
+          </div>
+        </article>
+      </div>
+    </div>
+{{ end }}
+
+{{ define "footer" }}
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""></script>
+    <!-- Turf.js -->
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <!-- ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <!-- Site base URL -->
+    <script>const SITE_BASE_URL = '{{ .Site.BaseURL }}';</script>
+    <!-- Property map + charts -->
+    <script src="{{ .Site.BaseURL }}js/property-map.js"></script>
+{{ end }}

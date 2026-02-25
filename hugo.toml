@@ -25,9 +25,13 @@ title = 'The Observatory'
     url = "/housing/"
     weight = 4
   [[menu.main]]
+    name = "Property Profile"
+    url = "/property/"
+    weight = 5
+  [[menu.main]]
     name = "Chart Admin"
     url = "/admin/charts/"
-    weight = 5
+    weight = 6
 
 [module]
 [[module.imports]]

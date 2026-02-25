@@ -1,0 +1,98 @@
+{
+  "bedrooms": {
+    "East Side": {
+      "0": {"Government rented": 1, "Private rented": 2, "Owns outright": 10, "Owns with a mortgage": 1, "Rent free": 1, "Other": 1},
+      "1": {"Government rented": 7, "Private rented": 17, "Owns outright": 30, "Owns with a mortgage": 2, "Other": 1},
+      "2": {"Government rented": 18, "Private rented": 7, "Owns outright": 17, "Owns with a mortgage": 8, "Rent free": 2},
+      "3": {"Government rented": 13, "Private rented": 1, "Owns outright": 39, "Owns with a mortgage": 16},
+      "4": {"Government rented": 3, "Private rented": 1, "Owns outright": 8, "Owns with a mortgage": 6},
+      "5": {"Owns with a mortgage": 1},
+      "6+": {}
+    },
+    "North District": {
+      "0": {"Government rented": 3, "Private rented": 36, "Owns outright": 14, "Owns with a mortgage": 6, "Other": 1},
+      "1": {"Government rented": 154, "Private rented": 139, "Employer rented": 5, "Owns outright": 66, "Owns with a mortgage": 31, "Co-ownership": 31, "Rent free": 3, "Other": 3},
+      "2": {"Government rented": 680, "Private rented": 145, "Employer rented": 6, "Owns outright": 131, "Owns with a mortgage": 70, "Co-ownership": 151, "Rent free": 8, "Other": 1},
+      "3": {"Government rented": 367, "Private rented": 63, "Employer rented": 6, "Owns outright": 110, "Owns with a mortgage": 66, "Co-ownership": 248, "Rent free": 5, "Other": 3},
+      "4": {"Government rented": 45, "Private rented": 3, "Owns outright": 19, "Owns with a mortgage": 12, "Co-ownership": 32},
+      "5": {"Government rented": 6, "Owns outright": 4, "Owns with a mortgage": 2},
+      "6+": {"Owns outright": 2}
+    },
+    "Reclamation Areas": {
+      "0": {"Government rented": 12, "Private rented": 13, "Employer rented": 1, "Owns outright": 4, "Owns with a mortgage": 3},
+      "1": {"Government rented": 715, "Private rented": 140, "Employer rented": 4, "Owns outright": 100, "Owns with a mortgage": 43, "Co-ownership": 23, "Rent free": 13, "Other": 5},
+      "2": {"Government rented": 603, "Private rented": 151, "Employer rented": 5, "Owns outright": 508, "Owns with a mortgage": 280, "Co-ownership": 300, "Rent free": 16, "Other": 27},
+      "3": {"Government rented": 329, "Private rented": 73, "Employer rented": 7, "Owns outright": 712, "Owns with a mortgage": 614, "Co-ownership": 642, "Rent free": 12, "Other": 21},
+      "4": {"Government rented": 64, "Private rented": 20, "Owns outright": 163, "Owns with a mortgage": 128, "Co-ownership": 82, "Rent free": 1, "Other": 2},
+      "5": {"Government rented": 7, "Owns outright": 8, "Owns with a mortgage": 5, "Co-ownership": 2},
+      "6+": {"Government rented": 2, "Owns outright": 1}
+    },
+    "Town Area": {
+      "0": {"Government rented": 1, "Private rented": 48, "Owns outright": 2, "Owns with a mortgage": 1},
+      "1": {"Government rented": 29, "Private rented": 304, "Employer rented": 9, "Owns outright": 57, "Owns with a mortgage": 21, "Rent free": 5, "Other": 3},
+      "2": {"Government rented": 31, "Private rented": 307, "Employer rented": 14, "Owns outright": 122, "Owns with a mortgage": 33, "Rent free": 7, "Other": 5},
+      "3": {"Government rented": 36, "Private rented": 143, "Employer rented": 4, "Owns outright": 126, "Owns with a mortgage": 59, "Rent free": 9, "Other": 5},
+      "4": {"Government rented": 5, "Private rented": 31, "Employer rented": 3, "Owns outright": 45, "Owns with a mortgage": 29, "Rent free": 2},
+      "5": {"Government rented": 1, "Private rented": 5, "Owns outright": 12, "Owns with a mortgage": 2, "Rent free": 1, "Other": 1},
+      "6+": {"Private rented": 1, "Owns outright": 2, "Owns with a mortgage": 2}
+    },
+    "Upper Town": {
+      "0": {"Government rented": 8, "Private rented": 4, "Rent free": 1},
+      "1": {"Government rented": 64, "Private rented": 69, "Employer rented": 1, "Owns outright": 36, "Owns with a mortgage": 12, "Rent free": 2},
+      "2": {"Government rented": 271, "Private rented": 52, "Employer rented": 1, "Owns outright": 39, "Owns with a mortgage": 39, "Rent free": 4, "Other": 1},
+      "3": {"Government rented": 194, "Private rented": 26, "Employer rented": 1, "Owns outright": 48, "Owns with a mortgage": 58, "Rent free": 1, "Other": 2},
+      "4": {"Government rented": 40, "Private rented": 4, "Owns outright": 20, "Owns with a mortgage": 23, "Rent free": 1},
+      "5": {"Government rented": 7, "Owns outright": 2, "Owns with a mortgage": 4},
+      "6+": {"Government rented": 2, "Owns outright": 1, "Owns with a mortgage": 2}
+    },
+    "Sandpits Area": {
+      "0": {},
+      "1": {"Government rented": 77, "Private rented": 5, "Owns outright": 12, "Owns with a mortgage": 2, "Other": 1},
+      "2": {"Government rented": 350, "Private rented": 8, "Employer rented": 2, "Owns outright": 68, "Owns with a mortgage": 19, "Rent free": 1, "Other": 1},
+      "3": {"Government rented": 138, "Private rented": 4, "Owns outright": 86, "Owns with a mortgage": 42, "Rent free": 2},
+      "4": {"Government rented": 7, "Private rented": 3, "Employer rented": 1, "Owns outright": 29, "Owns with a mortgage": 11, "Other": 1},
+      "5": {"Owns outright": 3, "Owns with a mortgage": 3},
+      "6+": {"Government rented": 1, "Other": 1}
+    },
+    "South District": {
+      "0": {"Government rented": 6, "Private rented": 1, "Owns outright": 2},
+      "1": {"Government rented": 76, "Private rented": 23, "Owns outright": 40, "Owns with a mortgage": 21, "Rent free": 3},
+      "2": {"Government rented": 191, "Private rented": 75, "Employer rented": 2, "Owns outright": 238, "Owns with a mortgage": 145, "Co-ownership": 47, "Rent free": 7, "Other": 2},
+      "3": {"Government rented": 211, "Private rented": 46, "Employer rented": 4, "Owns outright": 334, "Owns with a mortgage": 379, "Co-ownership": 60, "Rent free": 10, "Other": 4},
+      "4": {"Government rented": 20, "Private rented": 13, "Employer rented": 2, "Owns outright": 107, "Owns with a mortgage": 153, "Co-ownership": 9, "Other": 2},
+      "5": {"Government rented": 2, "Private rented": 7, "Owns outright": 21, "Owns with a mortgage": 23, "Rent free": 1, "Other": 1},
+      "6+": {"Government rented": 1, "Private rented": 1, "Owns outright": 9, "Owns with a mortgage": 3, "Other": 1}
+    }
+  },
+  "prices": {
+    "East Side": {
+      "1": {"min": 178000, "max": 590000, "avg": 279305},
+      "2": {"min": 270000, "max": 950000, "avg": 442853},
+      "3": {"min": 385000, "max": 850000, "avg": 572425}
+    },
+    "Reclamation Areas": {
+      "1": {"min": 145000, "max": 730000, "avg": 434710},
+      "2": {"min": 260000, "max": 1500000, "avg": 726498},
+      "3": {"min": 289995, "max": 2200000, "avg": 991963},
+      "4": {"min": 390000, "max": 2200000, "avg": 1242308}
+    },
+    "South District": {
+      "1": {"min": 172000, "max": 525000, "avg": 342429},
+      "2": {"min": 167500, "max": 1499995, "avg": 542804},
+      "3": {"min": 314950, "max": 2850000, "avg": 805710},
+      "4": {"min": 495000, "max": 2850000, "avg": 1327407}
+    },
+    "Town Area": {
+      "1": {"min": 149000, "max": 1200000, "avg": 300617},
+      "2": {"min": 265000, "max": 1900000, "avg": 709606},
+      "3": {"min": 369995, "max": 2650000, "avg": 920239},
+      "4": {"min": 360000, "max": 2250000, "avg": 1247278}
+    },
+    "Upper Town": {
+      "1": {"min": 62925, "max": 540000, "avg": 262601},
+      "2": {"min": 239999, "max": 799000, "avg": 504007},
+      "3": {"min": 335000, "max": 1250000, "avg": 712719},
+      "4": {"min": 690000, "max": 2500000, "avg": 1434857}
+    }
+  }
+}

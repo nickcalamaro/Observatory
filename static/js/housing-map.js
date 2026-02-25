@@ -210,19 +210,34 @@ function getAllTenuresForDistrict(districtName) {
 }
 
 // ============================================================
-// Color scale (dynamic equal-interval)
+// Color scale (dynamic nice-number intervals)
 // ============================================================
+
+/** Round a raw interval up to a "nice" number: 1, 2, 5, 10, 20, 25, 50, … */
+function niceStep(rawStep) {
+  if (rawStep <= 0) return 1;
+  const mag = Math.pow(10, Math.floor(Math.log10(rawStep)));   // order of magnitude
+  const frac = rawStep / mag;                                   // 1–10 range
+  let nice;
+  if (frac <= 1)      nice = 1;
+  else if (frac <= 2) nice = 2;
+  else if (frac <= 2.5) nice = 2.5;
+  else if (frac <= 5) nice = 5;
+  else                 nice = 10;
+  return nice * mag;
+}
+
 function computeBreaks(values) {
   const nonZero = values.filter(v => v > 0);
   if (nonZero.length === 0) return [0];
 
   const max = Math.max(...nonZero);
   const steps = COLORS.length;
-  const interval = max / steps;
+  const step = niceStep(max / steps);
 
   const breaks = [];
   for (let i = 0; i < steps; i++) {
-    breaks.push(Math.round(interval * i));
+    breaks.push(Math.round(step * i));
   }
   return breaks;
 }
