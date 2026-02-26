@@ -17,6 +17,7 @@
     <div class="tabs">
         <button class="tab active" onclick="switchTab('simple')">Simple Editor</button>
         <button class="tab" onclick="switchTab('advanced')">Advanced (JSON)</button>
+        <button class="tab" onclick="switchTab('ai')">🤖 Build with AI</button>
     </div>
     
     <div class="form-grid">
@@ -62,6 +63,94 @@
             </div>
         </div>
     </div>
+
+    <!-- AI Builder Tab Content (full width, outside form-grid) -->
+    <div id="ai-tab" class="tab-content">
+        <div class="ai-builder">
+            <div class="ai-layout">
+                <!-- Chat panel -->
+                <div class="ai-chat-panel">
+                    <div class="ai-chat-header">
+                        <div class="ai-chat-title">
+                            <span class="ai-avatar">🤖</span>
+                            <div>
+                                <strong>Chart Builder AI</strong>
+                                <span class="ai-model-badge">Mistral AI</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-icon btn-secondary" onclick="clearAIChat()" title="New conversation">🗑️ Clear</button>
+                    </div>
+
+                    <div id="ai-messages" class="ai-messages">
+                        <div class="ai-message ai-message-assistant">
+                            <div class="ai-bubble">
+                                <p>👋 I can help you build ECharts configurations! Try:</p>
+                                <ul>
+                                    <li><strong>Describe</strong> a chart — <em>"Create a bar chart showing monthly sales from Jan–Jun"</em></li>
+                                    <li><strong>Upload a CSV</strong> — I'll analyse it and suggest a chart</li>
+                                    <li><strong>Refine</strong> — <em>"Make the colours blue-to-purple gradient"</em></li>
+                                </ul>
+                                <p>The generated JSON will appear on the right and you can send it straight to the editor.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ai-input-area">
+                        <!-- CSV upload -->
+                        <div id="csv-dropzone" class="csv-dropzone">
+                            <input type="file" id="csv-file-input" accept=".csv,.tsv,.json" style="display:none">
+                            <span class="csv-dropzone-icon">📎</span>
+                            <span class="csv-dropzone-text">Drop CSV / TSV here or <a href="#" onclick="document.getElementById('csv-file-input').click();return false;">browse</a></span>
+                        </div>
+                        <div id="csv-preview-bar" class="csv-preview-bar hidden">
+                            <span id="csv-file-name" class="csv-file-name"></span>
+                            <span id="csv-row-count" class="csv-row-count"></span>
+                            <button class="csv-remove-btn" onclick="removeCSV()" title="Remove file">✕</button>
+                        </div>
+
+                        <!-- Prompt input -->
+                        <div class="ai-prompt-row">
+                            <textarea id="ai-prompt" class="ai-prompt" rows="2" placeholder="Describe the chart you want to create…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAIPrompt()}"></textarea>
+                            <button id="ai-send-btn" class="btn btn-primary ai-send-btn" onclick="sendAIPrompt()">Send ➤</button>
+                        </div>
+
+                        <div class="ai-input-hints">
+                            <button class="hint-chip" onclick="useHint(this)">Bar chart of population by district</button>
+                            <button class="hint-chip" onclick="useHint(this)">Pie chart from my CSV data</button>
+                            <button class="hint-chip" onclick="useHint(this)">Stacked area chart with gradient fills</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Output panel -->
+                <div class="ai-output-panel">
+                    <div class="ai-output-header">
+                        <strong>Generated JSON</strong>
+                        <div class="ai-output-actions">
+                            <button class="btn btn-icon btn-secondary" onclick="copyAIJson()" title="Copy to clipboard">📋 Copy</button>
+                            <button class="btn btn-icon btn-primary" onclick="sendAIJsonToEditor()" title="Load into editor">📥 Use in Editor</button>
+                        </div>
+                    </div>
+                    <pre id="ai-json-output" class="ai-json-output"><code>// JSON will appear here…</code></pre>
+                    <div id="ai-preview-container" class="ai-preview-container">
+                        <h4>Live Preview</h4>
+                        <div id="ai-chart-preview" style="width:100%;height:350px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model selector -->
+            <div class="ai-model-selector">
+                <label for="mistral-model">Model</label>
+                <select id="mistral-model">
+                    <option value="mistral-small-latest">Mistral Small (fast)</option>
+                    <option value="mistral-medium-latest">Mistral Medium</option>
+                    <option value="mistral-large-latest" selected>Mistral Large (best)</option>
+                    <option value="codestral-latest">Codestral (code-focused)</option>
+                </select>
+            </div>
+        </div>
+    </div>
     
     <div style="margin-bottom: 2rem;">
         <button class="btn btn-primary" onclick="saveChart()">💾 Save to API</button>
@@ -91,6 +180,7 @@
 
 {{ define "footer" }}
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script src="/Observatory/js/chart-ai.js"></script>
 <script>
 // Hardcoded API configuration
 const API_URL = 'https://observatorycharts-ji28h.bunny.run/api/charts';
@@ -336,6 +426,14 @@ function switchTab(tabName) {
     // Update tab content
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
     document.getElementById(`${tabName}-tab`).classList.add('active');
+
+    // The AI tab is full-width outside the form-grid; hide form-grid when AI is active
+    const formGrid = document.querySelector('.form-grid');
+    if (tabName === 'ai') {
+        formGrid.style.display = 'none';
+    } else {
+        formGrid.style.display = '';
+    }
 }
 
 // Generate form fields from JSON config
